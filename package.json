@@ -1,0 +1,50 @@
+{
+  "name": "gameguard",
+  "version": "0.1.0",
+  "description": "A JavaScript game server for managing your game's players and state",
+  "main": "index.js",
+  "scripts": {
+    "bundle:client": "rollup -c",
+    "bundle:client:watch": "rollup -c --watch",
+    "test:server": "mocha",
+    "test:client": "ava"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/robertcorponoi/gameguard.git"
+  },
+  "keywords": [
+    "game",
+    "server",
+    "player",
+    "players",
+    "room",
+    "rooms",
+    "storage"
+  ],
+  "author": "Robert Corponoi",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/robertcorponoi/gameguard/issues"
+  },
+  "homepage": "https://github.com/robertcorponoi/gameguard#readme",
+  "devDependencies": {
+    "ava": "^2.4.0",
+    "browser-env": "^3.2.6",
+    "chai": "^4.2.0",
+    "fastify": "^2.8.0",
+    "fastify-static": "^2.5.0",
+    "fs-extra": "^8.1.0",
+    "koa": "^2.8.1",
+    "koa-static": "^5.0.0",
+    "mocha": "^6.2.0",
+    "rollup": "^1.24.0",
+    "sinon": "^7.4.2"
+  },
+  "dependencies": {
+    "eventverse": "^1.0.3",
+    "express": "^4.17.1",
+    "nedb": "^1.8.0",
+    "ws": "^7.1.2"
+  }
+}
