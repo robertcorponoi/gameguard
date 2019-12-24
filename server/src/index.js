@@ -8,14 +8,15 @@ const Options = require('./options/Options');
 const WebSocketServer = require('ws').Server;
 
 /**
- * The server-side component of GameGuard that communicates with the client-side Gameguard client in order to
- * manage the game's players.
+ * The server-side component of GameGuard that is used to communicate with the client-side version.
+ * 
+ * GameGuard uses websockets to create a connection between the server and client versions and manage the players of the game.
  */
 module.exports = class GameGuard {
 
   /**
    * @param {http.Server|https.Server} server The server instance to bind to.
-   * @param {Object} [options] The initialization options passed to GameGuard.
+   * @param {Options} [options] The initialization options passed to GameGuard.
    * @param {string} [options.db] The path where the database file should be saved to.
    */
   constructor(server, options = {}) {
@@ -59,30 +60,57 @@ module.exports = class GameGuard {
     /**
      * A reference to the Players module.
      * 
+     * @private
+     * 
      * @property {Players}
      */
-    this.players = new Players(this._storage);
+    this._players = new Players(this._storage);
 
     /**
      * A reference to the Rooms module.
      * 
+     * @private
+     * 
      * @property {Rooms}
      */
-    this.rooms = new Rooms();
+    this._rooms = new Rooms();
 
     /**
      * A reference to the System module.
      * 
+     * @private
+     * 
      * @property {System}
      */
-    this.system = new System(this.players);
+    this._system = new System(this.players);
 
     /**
-     * Setup the WebSocket connection events and initialize all properties.
+     * Setup the responses to websocket events.
      */
     this._boot();
 
   }
+
+  /**
+   * Gets the reference to the Players module.
+   * 
+   * @returns {Players}
+   */
+  get players() { return this._players; }
+
+  /**
+   * Gets the reference to the Rooms module.
+   * 
+   * @returns {Rooms}
+   */
+  get rooms() { return this._rooms; }
+
+  /**
+   * Gets the reference to the System module.
+   * 
+   * @returns {System}
+   */
+  get system() { return this._system; }
 
   /**
    * Sets up the WebSocket connection events and initializes all properties of the server instance.

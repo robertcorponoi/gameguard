@@ -1,8 +1,9 @@
 'use strict'
 
 /**
- * A message represents the structure of a message sent by the server to the client or from the client
- * to the server.
+ * A Message represents a structured piece of data received from the GameGuard client or sent to the GameGuard client.
+ * 
+ * The GameGuard client has a similar Message object to ensure that messages sent between the two are consistent.
  */
 module.exports = class Message {
 

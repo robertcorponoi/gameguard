@@ -1,7 +1,7 @@
 'use strict'
 
 /**
- * The Room module represents a collection of players.
+ * A Room is used to arbitraily group players together.
  */
 module.exports = class Room {
 
@@ -54,44 +54,28 @@ module.exports = class Room {
    * 
    * @returns {string}
    */
-  get name() {
-
-    return this._name;
-
-  }
+  get name() { return this._name; }
 
   /**
    * Returns the number of players currently in this room.
    * 
    * @returns {number}
    */
-  get playerCount() {
-
-    return this._playerCount;
-
-  }
+  get playerCount() { return this._playerCount; }
 
   /**
    * Returns the players currently in this room.
    * 
    * @returns {Array<Player>}
    */
-  get players() {
-
-    return this._players;
-
-  }
+  get players() { return this._players; }
 
   /**
    * Returns the maximum number of players that can be in this room.
    * 
    * @returns {number}
    */
-  get capacity() {
-
-    return this._capacity;
-
-  }
+  get capacity() {  return this._capacity; }
 
   /**
    * Sets a new capacity for this room.

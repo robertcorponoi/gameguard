@@ -1,7 +1,7 @@
 'use strict'
 
 /**
- * The Systems module handles system-wide events.
+ * The System handles system events and contains methods that apply to all players and rooms.
  */
 module.exports = class System {
 

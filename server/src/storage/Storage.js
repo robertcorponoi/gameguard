@@ -1,10 +1,11 @@
 'use strict'
 
-const path = require('path');
 const Datastore = require('nedb');
 
 /**
- * The Storage module handles storing persistent game data in encrypted files.
+ * The Storage handles storing game data in either an encrypted file or database.
+ * 
+ * NOTE: Database saving comingi soon.
  */
 module.exports = class Storage {
 

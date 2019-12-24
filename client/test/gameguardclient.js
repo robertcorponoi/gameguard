@@ -221,25 +221,6 @@ function _defineProperty(obj, key, value) {
   return obj;
 }
 
-/**
- * Compare two functions by turning them into strings and
- * removing whitespace/line-breaks and then checking equality.
- * 
- * @since 0.1.0
- * 
- * @param {Function} fn1 The first function.
- * @param {Function} fn2 The second function.
- * 
- * @returns {boolean} Returns true if the functions are equal and false otherwise.
- */
-
-function compareFunctions(fn1, fn2) {
-  var f1 = fn1.toString().replace(/\n/g, '').replace(/\s{2}/g, ' ');
-  var f2 = fn2.toString().replace(/\n/g, '').replace(/\s{2}/g, ' ');
-  if (f1 === f2) return true;
-  return false;
-}
-
 var Listener =
 /**
  * The function that will be called when the listener is processed.
@@ -281,9 +262,23 @@ function Listener(fn, ctx, once) {
 };
 
 /**
- * Eventverse is a higly performant and easy to use event emitter for Nodejs and the browser.
+ * Compare two functions by turning them into strings and removing whitespace/line-breaks and then checking equality.
  * 
- * @author Robert Corponoi <robertcorponoi@gmail.com>
+ * @param {Function} fn1 The first function.
+ * @param {Function} fn2 The second function.
+ * 
+ * @returns {boolean} Returns true if the functions are equal and false otherwise.
+ */
+
+function compareFunctions(fn1, fn2) {
+  var f1 = fn1.toString().replace(/\n/g, '').replace(/\s{2}/g, ' ');
+  var f2 = fn2.toString().replace(/\n/g, '').replace(/\s{2}/g, ' ');
+  if (f1 === f2) return true;
+  return false;
+}
+
+/**
+ * Eventverse is a higly performant and easy to use event emitter for Nodejs and the browser.
  */
 
 var Eventverse =
@@ -291,6 +286,8 @@ var Eventverse =
 function () {
   /**
    * The maximum amount of listeners each event can have at one time.
+    * 
+    * @private
    * 
    * @property {number}
    * 
@@ -311,16 +308,14 @@ function () {
 
     _classCallCheck(this, Eventverse);
 
-    _defineProperty(this, "maxListenerCount", void 0);
+    _defineProperty(this, "_maxListenerCount", void 0);
 
     _defineProperty(this, "events", Object.create(null));
 
-    this.maxListenerCount = maxListenerCount;
+    this._maxListenerCount = maxListenerCount;
   }
   /**
-   * Returns the number of listeners for a given event.
-   * 
-   * @param {string} event The name of the event.
+   * Returns the number of max listeners each event can have at one time.
    * 
    * @returns {number}
    */
@@ -328,6 +323,14 @@ function () {
 
   _createClass(Eventverse, [{
     key: "listenerCount",
+
+    /**
+     * Returns the number of listeners for a given event.
+     * 
+     * @param {string} event The name of the event.
+     * 
+     * @returns {number}
+     */
     value: function listenerCount(event) {
       return this.events[event].length;
     }
@@ -354,7 +357,7 @@ function () {
   }, {
     key: "emit",
     value: function emit(event) {
-      if (!this.exists(event)) return;
+      if (!this._exists(event)) return;
       var listeners = this.events[event];
 
       for (var _len = arguments.length, args = new Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
@@ -400,7 +403,7 @@ function () {
      * @param {Object} context The context to use when calling the listener.
      * @param {boolean} once Indicates whether this listener should only be called once.
      * 
-     * @returns {Eventverse}
+     * @returns {Eventverse} Returns this for chaining.
      */
 
   }, {
@@ -410,7 +413,7 @@ function () {
       var once = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : false;
       var listener = new Listener(fn, context, once);
 
-      if (!this.exists(event)) {
+      if (!this._exists(event)) {
         this.events[event] = [];
       } else if (this.events[event].length === this.maxListenerCount) {
         console.warn("[Eventverse][addListener]: The event ".concat(event, " already has the max amount of listeners."));
@@ -426,7 +429,7 @@ function () {
      * @param {string} event The name of the event to remove the listener on.
      * @param {Function} listener The listener to remove from the event.
      * 
-     * @returns {Eventverse}
+     * @returns {Eventverse} Returns this for chaining.
      */
 
   }, {
@@ -434,7 +437,7 @@ function () {
     value: function removeListener(event, listener) {
       var _this = this;
 
-      if (!this.exists(event)) {
+      if (!this._exists(event)) {
         console.warn('[Eventverse][removeListener]: Unable to remove listener for an event that doesnt exist.');
         return;
       }
@@ -482,13 +485,13 @@ function () {
      * 
      * @param {string} event The name of the event to remove all listeners from.
      * 
-     * @returns {Eventverse}
+     * @returns {Eventverse} Returns this for chaining.
      */
 
   }, {
     key: "removeAllListeners",
     value: function removeAllListeners(event) {
-      if (!this.exists(event)) {
+      if (!this._exists(event)) {
         console.warn('[Eventverse][removeAllListeners]: Unable to remove listener for an event that doesnt exist.');
         return;
       }
@@ -503,7 +506,7 @@ function () {
      * @param {Function} fn The function to run when the event is emitted.
      * @param {Object} [context=this] The context to use when calling the listener.
      * 
-     * @returns {Eventverse}
+     * @returns {Eventverse} Returns this for chaining.
      */
 
   }, {
@@ -520,7 +523,7 @@ function () {
      * @param {Function} fn The function to run when the event is emitted.
      * @param {Object} [context=this] The context to use when calling the listener.
      * 
-     * @returns {Eventverse}
+     * @returns {Eventverse} Returns this for chaining.
      */
 
   }, {
@@ -541,10 +544,15 @@ function () {
      */
 
   }, {
-    key: "exists",
-    value: function exists(event) {
+    key: "_exists",
+    value: function _exists(event) {
       if (this.events[event]) return true;
       return false;
+    }
+  }, {
+    key: "maxListenerCount",
+    get: function get() {
+      return this._maxListenerCount;
     }
   }]);
 

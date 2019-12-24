@@ -4,7 +4,7 @@ const Player = require('./Player');
 const EventEmitter = require('events').EventEmitter;
 
 /**
- * The Players module handles creating new players, managing their state within the game, and removing them.
+ * Players handles creating, managing, and removing players from the game.
  */
 module.exports = class Players extends EventEmitter {
 
@@ -34,6 +34,13 @@ module.exports = class Players extends EventEmitter {
     this._players = [];
 
   }
+
+  /**
+   * Gets all of the players connected to the GameGuard server.
+   * 
+   * @returns {Array<Player>}
+   */
+  get players() { return this._players; }
 
   /**
    * Adds a player to the Array of players connected to the game.
