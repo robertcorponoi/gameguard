@@ -1,3 +1,8 @@
+0.4.0 / 2019-12-24
+==================
+* [MISC] Updated tests to clear database file before each one.
+* [MISC] Added more test cases.
+
 0.3.0 / 2019-12-24
 ==================
 * [FEATURE] Changed class properties to be strict and added the necessary setters/getters to be more strict.

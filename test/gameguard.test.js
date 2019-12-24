@@ -29,7 +29,14 @@ const ids = [
   "202817c6-7035-4cf3-aac4-6a0846cf74ac",
 ];
 
-const options = { db: path.resolve(process.cwd(), 'test', 'gameguard.db') };
+const dbPath = path.resolve(process.cwd(), 'test', 'gameguard.db');
+
+const options = { db: dbPath };
+
+/**
+ * Before each test clear the database file so it doesn't affect future tests.
+ */
+beforeEach(() => fs.truncateSync(dbPath, 0));
 
 /**
  * Before any test is run, we create a basic http server and use it to run the game server on.
@@ -62,194 +69,223 @@ after(done => {
 });
 
 /**
- * After each test is finished running, we reset some properties of the game server so that they
- * don't mess with other tests.
- */
-
-/**
  * ==============================================================================================
  * PLAYERS
  * ============================================================================================== 
  */
-describe('Connecting Players to the Game Server', () => {
+describe('Players', () => {
 
-  it('should add the player to the Array of connected players when the player connects', done => {
+  describe('Connecting players', () => {
 
-    addMockClients(1);
+    it('should add the player to the Array of connected players when the player connects', done => {
 
-    setTimeout(() => {
+      addMockClients(1);
 
-      chai.expect(gameGuard.players._players.length).to.equal(1);
+      setTimeout(() => {
 
-      done();
+        chai.expect(gameGuard.players._players.length).to.equal(1);
 
-    }, 1000);
+        done();
 
-  });
-
-  it('should create the player object saving their id and IP', done => {
-
-    addMockClients(1);
-
-    setTimeout(() => {
-
-      chai.expect(gameGuard.players._players[0].ip).to.equal('123.456.0.1') && chai.expect(gameGuard.players._players[0].id).to.equal('1dfd0497-a2f3-43de-9a55-d965bdde9d70');
-
-      done();
-
-    }, 1000);
-
-  });
-
-  it('should emit and event when the player object is created', done => {
-
-    const spy = sinon.spy();
-
-    gameGuard.players.on('player-joined', spy);
-
-    addMockClients(1);
-
-    setTimeout(() => {
-
-      chai.expect(spy.calledOnce).to.be.true;
-
-      gameGuard.players.removeAllListeners();
-
-      done();
-
-    }, 1000);
-
-  });
-
-});
-
-describe('Sending messages to players', () => {
-
-  it('should send a message to a player', done => {
-
-    gameGuard.players.on('player-joined', player => {
-
-      player.message('info', 'hello there!');
-
-      chai.expect(player._ws.messages[0]).to.equal(`{"type":"info","content":"hello there!"}`);
+      }, 1000);
 
     });
 
-    addMockClients(1);
+    it('should create the player object saving their id and ip', done => {
 
-    gameGuard.players.removeAllListeners();
+      addMockClients(1);
 
-    done();
+      setTimeout(() => {
+
+        chai.expect(gameGuard.players._players[0].ip).to.equal('123.456.0.1') && chai.expect(gameGuard.players._players[0].id).to.equal('1dfd0497-a2f3-43de-9a55-d965bdde9d70');
+
+        done();
+
+      }, 1000);
+
+    });
+
+    it('should emit and event when the player object is created', done => {
+
+      const spy = sinon.spy();
+
+      gameGuard.players.on('player-joined', spy);
+
+      addMockClients(1);
+
+      setTimeout(() => {
+
+        chai.expect(spy.calledOnce).to.be.true;
+
+        gameGuard.players.removeAllListeners();
+
+        done();
+
+      }, 1000);
+
+    });
 
   });
 
-});
+  describe('Messaging players', () => {
 
-describe('Kicking and banning players', () => {
+    it('should send a message to a player', done => {
 
-  it('should kick a player', done => {
+      gameGuard.players.on('player-joined', player => {
 
-    const spy = sinon.spy();
+        player.message('info', 'hello there!');
 
-    gameGuard.players.on('player-kicked', spy);
+        chai.expect(player._ws.messages[0]).to.equal(`{"type":"info","content":"hello there!"}`);
 
-    gameGuard.players.on('player-joined', player => player.kick('for testing'));
+      });
 
-    addMockClients(1);
-
-    setTimeout(() => {
-
-      chai.expect(spy.calledOnce).to.be.true;
+      addMockClients(1);
 
       gameGuard.players.removeAllListeners();
 
       done();
 
-    }, 1000);
+    });
+
+    it('should send a message to multiple players', function (done) {
+
+      this.timeout(2000);
+
+      let players = [];
+
+      gameGuard.players.on('player-joined', player => {
+
+        players.push(player);
+
+        player.message('debug', 'x: 5');
+
+      });
+
+      addMockClients(2);
+
+      setTimeout(() => {
+
+        chai.expect(players[0]._ws.messages[0]).to.equal('{"type":"debug","content":"x: 5"}') &&
+
+          chai.expect(players[1]._ws.messages[0]).to.equal('{"type":"debug","content":"x: 5"}')
+
+        gameGuard.players.removeAllListeners();
+
+        done();
+
+      }, 1500);
+
+    });
 
   });
 
-  it('should kick a player with a reason', done => {
+  describe('Kicking and banning players', () => {
 
-    const spy = sinon.spy();
+    it('should kick a player', done => {
 
-    gameGuard.players.on('player-kicked', spy);
+      const spy = sinon.spy();
 
-    gameGuard.players.on('player-joined', player => player.kick('for testing'));
+      gameGuard.players.on('player-kicked', spy);
 
-    addMockClients(1);
+      gameGuard.players.on('player-joined', player => player.kick('for testing'));
 
-    setTimeout(() => {
+      addMockClients(1);
 
-      chai.expect(spy.getCalls()[0].args[1]).to.equal('for testing');
+      setTimeout(() => {
 
-      gameGuard.players.removeAllListeners();
+        chai.expect(spy.calledOnce).to.be.true;
 
-      done();
+        gameGuard.players.removeAllListeners();
 
-    }, 1000);
+        done();
 
-  });
+      }, 1000);
 
-  it('should ban a player', done => {
+    });
 
-    const spy = sinon.spy();
+    it('should kick a player with a reason', done => {
 
-    gameGuard.players.on('player-banned', spy);
+      const spy = sinon.spy();
 
-    gameGuard.players.on('player-joined', player => player.ban('for testing'));
+      gameGuard.players.on('player-kicked', spy);
 
-    addMockClients(1);
+      gameGuard.players.on('player-joined', player => player.kick('for testing'));
 
-    setTimeout(() => {
+      addMockClients(1);
 
-      chai.expect(spy.calledOnce).to.be.true;
+      setTimeout(() => {
 
-      gameGuard.players.removeAllListeners();
+        chai.expect(spy.getCalls()[0].args[1]).to.equal('for testing');
 
-      done();
+        gameGuard.players.removeAllListeners();
 
-    }, 1000);
+        done();
 
-  });
+      }, 1000);
 
-  it('should ban a player with a reason', done => {
+    });
 
-    const spy = sinon.spy();
+    it('should ban a player', done => {
 
-    gameGuard.players.on('player-banned', spy);
+      const spy = sinon.spy();
 
-    gameGuard.players.on('player-joined', player => player.ban('for testing'));
+      gameGuard.players.on('player-banned', spy);
 
-    addMockClients(1);
+      gameGuard.players.on('player-joined', player => player.ban('for testing'));
 
-    setTimeout(() => {
+      addMockClients(1);
 
-      chai.expect(spy.getCalls()[0].args[1]).to.equal('for testing');
+      setTimeout(() => {
 
-      gameGuard.players.removeAllListeners();
+        chai.expect(spy.calledOnce).to.be.true;
 
-      done();
+        gameGuard.players.removeAllListeners();
 
-    }, 1000);
+        done();
 
-  });
+      }, 1000);
 
-  it('should ban a player and add them to the banned players list', async () => {
+    });
 
-    gameGuard.players.on('player-joined', player => player.ban('for testing'));
+    it('should ban a player with a reason', done => {
 
-    addMockClients();
+      const spy = sinon.spy();
 
-    const banned = await gameGuard._storage._banned();
+      gameGuard.players.on('player-banned', spy);
 
-    setTimeout(() => {
+      gameGuard.players.on('player-joined', player => player.ban('for testing'));
 
-      chai.expect(banned[0].id).to.equal('1dfd0497-a2f3-43de-9a55-d965bdde9d70');
+      addMockClients(1);
 
-      gameGuard.players.removeAllListeners();
+      setTimeout(() => {
 
-    }, 1500);
+        chai.expect(spy.getCalls()[0].args[1]).to.equal('for testing');
+
+        gameGuard.players.removeAllListeners();
+
+        done();
+
+      }, 1000);
+
+    });
+
+    it('should ban a player and add them to the banned players list', async () => {
+
+      gameGuard.players.on('player-joined', player => player.ban('for testing'));
+
+      addMockClients();
+
+      const banned = await gameGuard._storage._banned();
+
+      setTimeout(() => {
+
+        chai.expect(banned[0].id).to.equal('1dfd0497-a2f3-43de-9a55-d965bdde9d70');
+
+        gameGuard.players.removeAllListeners();
+
+      }, 1500);
+
+    });
 
   });
 
@@ -260,237 +296,245 @@ describe('Kicking and banning players', () => {
  * ROOMS
  * ============================================================================================== 
  */
-describe('Creating and destroying rooms', () => {
+describe('Rooms', () => {
 
-  it('should create a room with default capacity', () => {
+  describe('Creating rooms', () => {
 
-    const room1 = gameGuard.rooms.create('room1');
+    it('should create a room with default capacity', () => {
 
-    chai.expect(gameGuard.rooms.rooms[0].name).to.equal('room1') && chai.expect(gameGuard.rooms.rooms[0].capacity).to.equal(Infinity) && chai.expect(room1.name).to.equal('room1');
+      const room1 = gameGuard.rooms.create('room1');
 
-  });
-
-  it('should create a room with a capacity of 10', () => {
-
-    gameGuard.rooms._rooms = [];
-
-    gameGuard.rooms.create('room1', 10);
-
-    chai.expect(gameGuard.rooms.rooms[0].name).to.equal('room1') && chai.expect(gameGuard.rooms.rooms[0].capacity).to.equal(10);
-
-  });
-
-  it('should create a room and emit an event when the room is created', done => {
-
-    gameGuard.rooms._rooms = [];
-
-    const spy = sinon.spy();
-
-    gameGuard.rooms.on('room-created', spy);
-
-    gameGuard.rooms.create('room1', 10);
-
-    chai.expect(spy.calledOnce).to.be.true;
-
-    gameGuard.rooms.removeAllListeners();
-
-    done();
-
-  });
-
-  it('should create a room and emit an event when the room is created with the room object', done => {
-
-    gameGuard.rooms._rooms = [];
-
-    const spy = sinon.spy();
-
-    gameGuard.rooms.on('room-created', spy);
-
-    gameGuard.rooms.create('room1', 10);
-
-    chai.expect(spy.getCalls()[0].args[0].name).to.equal('room1');
-
-    gameGuard.rooms.removeAllListeners();
-
-    done();
-
-  });
-
-  it('should fail creating a new room with the same name as an existing room', done => {
-
-    gameGuard.rooms._rooms = [];
-
-    gameGuard.rooms.create('room1');
-
-    chai.expect(() => gameGuard.rooms.create('room1')).to.throw('A room already exists with the name provided');
-
-    done();
-
-  });
-
-  it('should destroy a room', () => {
-
-    gameGuard.rooms._rooms = [];
-
-    gameGuard.rooms.create('room1');
-
-    gameGuard.rooms.destroy('room1');
-
-    chai.expect(gameGuard.rooms.rooms.length).to.equal(0);
-
-  });
-
-  it('should destroy a room and emit an event', done => {
-
-    gameGuard.rooms._rooms = [];
-
-    const spy = sinon.spy();
-
-    gameGuard.rooms.on('room-destroyed', spy);
-
-    gameGuard.rooms.create('room1', 10);
-
-    gameGuard.rooms.destroy('room1');
-
-    chai.expect(spy.calledOnce).to.be.true;
-
-    gameGuard.rooms.removeAllListeners();
-
-    done();
-
-  });
-
-  it('should destroy a room and emit an event with the room name', done => {
-
-    gameGuard.rooms._rooms = [];
-
-    const spy = sinon.spy();
-
-    gameGuard.rooms.on('room-destroyed', spy);
-
-    gameGuard.rooms.create('room1', 10);
-
-    gameGuard.rooms.destroy('room1');
-
-    chai.expect(spy.getCalls()[0].args[0]).to.equal('room1');
-
-    gameGuard.rooms.removeAllListeners();
-
-    done();
-
-  });
-
-});
-
-describe('Adding and removing players from rooms', () => {
-
-  it('should add a player to a room', done => {
-
-    const room1 = gameGuard.rooms.create('room1');
-
-    gameGuard.players.on('player-joined', player => room1.add(player));
-
-    addMockClients();
-
-    setTimeout(() => {
-
-      chai.expect(room1._players.length).to.equal(1) && chai.expect(room1._players[0]._id).to.equal(ids[0]);
-
-      done();
-
-    }, 1500);
-
-  });
-
-  it('should remove a player from a room', done => {
-
-    const players = [];
-
-    gameGuard.rooms._rooms = [];
-
-    const room1 = gameGuard.rooms.create('room1');
-
-    gameGuard.players.on('player-joined', player => {
-
-      room1.add(player);
-
-      players.push(player);
+      chai.expect(gameGuard.rooms.rooms[0].name).to.equal('room1') && chai.expect(gameGuard.rooms.rooms[0].capacity).to.equal(Infinity) && chai.expect(room1.name).to.equal('room1');
 
     });
 
-    addMockClients(2);
+    it('should create a room with a capacity of 10', () => {
 
-    setTimeout(() => {
+      gameGuard.rooms._rooms = [];
 
-      room1.remove(players[0]);
+      gameGuard.rooms.create('room1', 10);
 
-      chai.expect(room1._players.length).to.equal(1) && chai.expect(room1._players[0]._id).to.equal(ids[1]);
-
-      done();
-
-    }, 1500);
-
-  });
-
-  it('should remove all players from a room', done => {
-
-    gameGuard.rooms._rooms = [];
-
-    const room1 = gameGuard.rooms.create('room1');
-
-    gameGuard.players.on('player-joined', player => room1.add(player));
-
-    addMockClients(2);
-
-    setTimeout(() => {
-
-      room1.clear();
-
-      chai.expect(room1._players.length).to.equal(0);
-
-      done();
-
-    }, 1500);
-
-  });
-
-});
-
-describe('Messaging players in rooms', () => {
-
-  it('should broadcast a message to all of the players in the room', function (done) {
-
-    this.timeout(5000);
-
-    let players = [];
-
-    gameGuard.rooms._rooms = [];
-
-    const broadcastRoom = gameGuard.rooms.create('broadcastRoom');
-
-    gameGuard.players.on('player-joined', player => {
-
-      players.push(player);
-
-      broadcastRoom.add(player);
+      chai.expect(gameGuard.rooms.rooms[0].name).to.equal('room1') && chai.expect(gameGuard.rooms.rooms[0].capacity).to.equal(10);
 
     });
 
-    addMockClients(2);
+    it('should create a room and emit an event when the room is created', done => {
 
-    setTimeout(() => {
+      gameGuard.rooms._rooms = [];
 
-      broadcastRoom.broadcast('info', 'Hello World!');
+      const spy = sinon.spy();
+
+      gameGuard.rooms.on('room-created', spy);
+
+      gameGuard.rooms.create('room1', 10);
+
+      chai.expect(spy.calledOnce).to.be.true;
+
+      gameGuard.rooms.removeAllListeners();
+
+      done();
+
+    });
+
+    it('should create a room and emit an event when the room is created with the room object', done => {
+
+      gameGuard.rooms._rooms = [];
+
+      const spy = sinon.spy();
+
+      gameGuard.rooms.on('room-created', spy);
+
+      gameGuard.rooms.create('room1', 10);
+
+      chai.expect(spy.getCalls()[0].args[0].name).to.equal('room1');
+
+      gameGuard.rooms.removeAllListeners();
+
+      done();
+
+    });
+
+    it('should fail creating a new room with the same name as an existing room', done => {
+
+      gameGuard.rooms._rooms = [];
+
+      gameGuard.rooms.create('room1');
+
+      chai.expect(() => gameGuard.rooms.create('room1')).to.throw('A room already exists with the name provided');
+
+      done();
+
+    });
+
+  });
+
+  describe('Destroying rooms', () => {
+
+    it('should destroy a room', () => {
+
+      gameGuard.rooms._rooms = [];
+
+      gameGuard.rooms.create('room1');
+
+      gameGuard.rooms.destroy('room1');
+
+      chai.expect(gameGuard.rooms.rooms.length).to.equal(0);
+
+    });
+
+    it('should destroy a room and emit an event', done => {
+
+      gameGuard.rooms._rooms = [];
+
+      const spy = sinon.spy();
+
+      gameGuard.rooms.on('room-destroyed', spy);
+
+      gameGuard.rooms.create('room1', 10);
+
+      gameGuard.rooms.destroy('room1');
+
+      chai.expect(spy.calledOnce).to.be.true;
+
+      gameGuard.rooms.removeAllListeners();
+
+      done();
+
+    });
+
+    it('should destroy a room and emit an event with the room name', done => {
+
+      gameGuard.rooms._rooms = [];
+
+      const spy = sinon.spy();
+
+      gameGuard.rooms.on('room-destroyed', spy);
+
+      gameGuard.rooms.create('room1', 10);
+
+      gameGuard.rooms.destroy('room1');
+
+      chai.expect(spy.getCalls()[0].args[0]).to.equal('room1');
+
+      gameGuard.rooms.removeAllListeners();
+
+      done();
+
+    });
+
+  });
+
+  describe('Adding and removing players from rooms', () => {
+
+    it('should add a player to a room', done => {
+
+      const room1 = gameGuard.rooms.create('room1');
+
+      gameGuard.players.on('player-joined', player => room1.add(player));
+
+      addMockClients();
 
       setTimeout(() => {
 
-        chai.expect(players[0]._ws.messages[0]).to.equal('{"type":"info","content":"Hello World!"}') && chai.expect(players[1]._ws.messages[0]).to.equal('{"type":"info","content":"Hello World!"}');
+        chai.expect(room1._players.length).to.equal(1) && chai.expect(room1._players[0]._id).to.equal(ids[0]);
 
         done();
 
-      }, 3000);
+      }, 1500);
 
-    }, 1500);
+    });
+
+    it('should remove a player from a room', done => {
+
+      const players = [];
+
+      gameGuard.rooms._rooms = [];
+
+      const room1 = gameGuard.rooms.create('room1');
+
+      gameGuard.players.on('player-joined', player => {
+
+        room1.add(player);
+
+        players.push(player);
+
+      });
+
+      addMockClients(2);
+
+      setTimeout(() => {
+
+        room1.remove(players[0]);
+
+        chai.expect(room1._players.length).to.equal(1) && chai.expect(room1._players[0]._id).to.equal(ids[1]);
+
+        done();
+
+      }, 1500);
+
+    });
+
+    it('should remove all players from a room', done => {
+
+      gameGuard.rooms._rooms = [];
+
+      const room1 = gameGuard.rooms.create('room1');
+
+      gameGuard.players.on('player-joined', player => room1.add(player));
+
+      addMockClients(2);
+
+      setTimeout(() => {
+
+        room1.clear();
+
+        chai.expect(room1._players.length).to.equal(0);
+
+        done();
+
+      }, 1500);
+
+    });
+
+  });
+
+  describe('Messaging players in rooms', () => {
+
+    it('should broadcast a message to all of the players in the room', function (done) {
+
+      this.timeout(5000);
+
+      let players = [];
+
+      gameGuard.rooms._rooms = [];
+
+      const broadcastRoom = gameGuard.rooms.create('broadcastRoom');
+
+      gameGuard.players.on('player-joined', player => {
+
+        players.push(player);
+
+        broadcastRoom.add(player);
+
+      });
+
+      addMockClients(2);
+
+      setTimeout(() => {
+
+        broadcastRoom.broadcast('info', 'Hello World!');
+
+        setTimeout(() => {
+
+          chai.expect(players[0]._ws.messages[0]).to.equal('{"type":"info","content":"Hello World!"}') && chai.expect(players[1]._ws.messages[0]).to.equal('{"type":"info","content":"Hello World!"}');
+
+          done();
+
+        }, 3000);
+
+      }, 1500);
+
+    });
 
   });
 
@@ -503,15 +547,25 @@ describe('Messaging players in rooms', () => {
  */
 describe('Messaging all players in the server', () => {
 
-  it('should broadcast a message to all of the players in the server', done => {
+  it('should broadcast a message to all of the players in the server', function (done) {
+
+    this.timeout(5000);
 
     addMockClients(2);
 
-    gameGuard.system.broadcast('info', 'Hello World!');
+    setTimeout(() => {
 
-    chai.expect(gameGuard.players._players[0]._ws.messages[0]).to.equal('{"type":"info","content":"Hello World!"}') && chai.expect(gameGuard.players._players[1]._ws.messages[0]).to.equal('{"type":"info","content":"Hello World!"}');
+      gameGuard.system.broadcast('info', 'Hello World!');
 
-    done();
+      setTimeout(() => {
+
+        chai.expect(gameGuard.players._players[0]._ws.messages[0]).to.equal('{"type":"info","content":"Hello World!"}') && chai.expect(gameGuard.players._players[1]._ws.messages[0]).to.equal('{"type":"info","content":"Hello World!"}');
+
+      }, 3000);
+
+      done();
+
+    }, 1500)
 
   });
 
