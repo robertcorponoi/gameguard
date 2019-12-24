@@ -3,7 +3,7 @@
 const path = require('path');
 
 /**
- * Defines the options available for an instance of GameGuard along with their default options.
+ * Defines the options available for an instance of GameGuard along with their default values.
  */
 module.exports = class Options {
 

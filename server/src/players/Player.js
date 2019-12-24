@@ -4,7 +4,7 @@ const Message = require('../message/Message');
 const EventEmitter = require('events').EventEmitter;
 
 /**
- * The Player module represents a client that has connected to the game server.
+ * A Player represents a GameGuard client that has made a successful connection to the GameGuard server.
  */
 module.exports = class Player extends EventEmitter {
 
@@ -61,22 +61,14 @@ module.exports = class Player extends EventEmitter {
    * 
    * @returns {string}
    */
-  get id() {
-
-    return this._id;
-
-  }
+  get id() { return this._id; }
 
   /**
    * Returns the IP address of this player.
    * 
    * @returns {string}
    */
-  get ip() {
-
-    return this._ip;
-
-  }
+  get ip() { return this._ip; }
 
   /**
    * Sends a message to this Player.

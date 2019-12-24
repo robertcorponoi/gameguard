@@ -4,7 +4,7 @@ const Room = require('./Room');
 const EventEmitter = require('events').EventEmitter;
 
 /**
- * The Rooms module handles creating new rooms, managing the players within them, and removing them.
+ * Rooms is used to create, manage, and remove rooms.
  */
 module.exports = class Rooms extends EventEmitter {
 
@@ -28,11 +28,7 @@ module.exports = class Rooms extends EventEmitter {
    * 
    * @returns {Array<Room>}
    */
-  get rooms() {
-
-    return this._rooms;
-
-  }
+  get rooms() { return this._rooms; }
 
   /**
    * Creates a new room.
