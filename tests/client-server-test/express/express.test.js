@@ -10,7 +10,7 @@ const app = express();
 app.use(express.static(path.resolve(__dirname, '..', 'public')));
 app.use(express.static(path.resolve(__dirname, '..', '..', 'client')));
 
-const GameGuard = require('../../server/src/index');
+const GameGuard = require('../../../server/src/index');
 
 const server = app.listen(3000, () => console.log('Listening on port 3000'));
 
