@@ -610,7 +610,9 @@ class GameGuardClient extends Eventverse {
    */
   _boot() {
 
-    this._socket = new WebSocket('ws://localhost:3000/');
+    const wsProtocol = this._options.secure ? 'wss' : 'ws';
+
+    this._socket = new WebSocket(`${wsProtocol}://${window.location.host}/`);
 
     this._socket.addEventListener('open', () => this._onOpen());
 
@@ -644,6 +646,8 @@ class GameGuardClient extends Eventverse {
    * @param {string} message The message Object received from the server.
    */
   _onMessage(message) {
+
+    console.log('blah');
 
     const parsed = JSON.parse(message.data);
 

@@ -6,7 +6,7 @@ const chai = require('chai');
 const sinon = require('sinon');
 const fs = require('fs-extra');
 
-const GameGuard = require('../server/src/index');
+const GameGuard = require('../../server/src/index');
 const MockClient = require('./MockClient/MockClient');
 
 let server;
@@ -29,7 +29,7 @@ const ids = [
   "202817c6-7035-4cf3-aac4-6a0846cf74ac",
 ];
 
-const dbPath = path.resolve(process.cwd(), 'test', 'gameguard.db');
+const dbPath = path.resolve(process.cwd(), 'tests', 'server', 'gameguard.db');
 
 const options = { db: dbPath };
 

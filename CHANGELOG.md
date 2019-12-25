@@ -2,6 +2,9 @@
 ==================
 * [MISC] Updated tests to clear database file before each one.
 * [MISC] Added more test cases.
+* [MISC] Moved all tests to tests folder.
+* [HOTFIX] Changed the client to use window.location.host instead of localhost.
+* [HOTFIX] Made secure flag change connection string to wss.
 
 0.3.0 / 2019-12-24
 ==================
