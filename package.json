@@ -2,7 +2,8 @@
   "name": "gameguard",
   "version": "0.4.0",
   "description": "A JavaScript game server for managing your game's players and state",
-  "main": "index.js",
+  "main": "server/src/index.js",
+  "module": "gameguardclient.js",
   "scripts": {
     "bundle:client": "rollup -c",
     "bundle:client:watch": "rollup -c --watch",
@@ -37,9 +38,9 @@
     "fs-extra": "^8.1.0",
     "koa": "^2.11.0",
     "koa-static": "^5.0.0",
-    "mocha": "^6.2.2",
-    "rollup": "^1.27.14",
-    "sinon": "^8.0.1"
+    "mocha": "^7.0.0",
+    "rollup": "^1.28.0",
+    "sinon": "^8.0.2"
   },
   "dependencies": {
     "eventverse": "^1.0.6",

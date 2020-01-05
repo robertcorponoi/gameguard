@@ -1,3 +1,11 @@
+0.4.1 / 2020-01-05
+==================
+* [HOTFIX] Added main property to package.json.
+* [MISC] Updated license year to reflect new year.
+* [MISC] Removed extra spacing.
+* [MISC] Removed debugging statements.
+* [MISC] Updated dependencies to their latest versions.
+
 0.4.0 / 2019-12-24
 ==================
 * [MISC] Updated tests to clear database file before each one.

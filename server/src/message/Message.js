@@ -6,13 +6,11 @@
  * The GameGuard client has a similar Message object to ensure that messages sent between the two are consistent.
  */
 module.exports = class Message {
-
   /**
    * @param {string} type The type of message that this message is.
    * @param {string} message The message to send to the client.
    */
   constructor(type, message) {
-
     /**
      * The type of message that this message is.
      * 
@@ -26,7 +24,5 @@ module.exports = class Message {
      * @proeprty {string}
      */
     this.content = message;
-
   }
-
 };

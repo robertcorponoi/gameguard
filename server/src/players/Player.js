@@ -7,14 +7,12 @@ const EventEmitter = require('events').EventEmitter;
  * A Player represents a GameGuard client that has made a successful connection to the GameGuard server.
  */
 module.exports = class Player extends EventEmitter {
-
   /**
    * @param {string} id The id assigned to this player by the client GameGuard instance.
    * @param {Object} ws The WebSocket connection Object for this player.
    * @param {Object} req The http request connection Object for this player.
    */
   constructor(id, ws, req) {
-
     super();
 
     /**
@@ -53,7 +51,6 @@ module.exports = class Player extends EventEmitter {
      * @property {string}
      */
     this._ip = this._req.headers['x-forwarded-for'] || this._req.connection.remoteAddress;
-
   }
 
   /**
@@ -77,13 +74,11 @@ module.exports = class Player extends EventEmitter {
    * @param {string} message The message to send to this Player.
    */
   message(type, message) {
-
     const msg = new Message(type, message);
 
     const normalized = JSON.stringify(msg);
 
     this._ws.send(normalized);
-
   }
 
   /**
@@ -92,11 +87,9 @@ module.exports = class Player extends EventEmitter {
    * @param {string} reason The reason as to why the Player was kicked from the game server.
    */
   kick(reason) {
-
     this._ws.terminate(reason);
 
     this.emit('kick', this, reason);
-
   }
 
   /**
@@ -107,13 +100,10 @@ module.exports = class Player extends EventEmitter {
    * @param {boolean} [useIP=false] Indicates whether the Player's IP should be banned instead of just their individual id.
    */
   ban(reason, useIP = false) {
-
     this._ws.terminate(reason);
 
     const info = useIP ? this.ip : this.id;
 
     this.emit('ban', this, { reason: reason, id: info });
-
   }
-
 }

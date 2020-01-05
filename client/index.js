@@ -9,13 +9,11 @@ import Eventverse from '../node_modules/eventverse/eventverse.js';
  * The GameGuard client is used to establish a connection to the server send player info.
  */
 export default class GameGuardClient extends Eventverse {
-
   /**
    * @param {Object} [options] The initialization parameters passed to this instance.
    * @param {boolean} [options.secure=false] Indicates whether the websocket will connect to the server with a secure connection or not.
    */
   constructor(options = {}) {
-
     super();
 
     /**
@@ -46,7 +44,6 @@ export default class GameGuardClient extends Eventverse {
     this._clientData = new ClientData();
 
     this._boot();
-
   }
 
   /**
@@ -55,7 +52,6 @@ export default class GameGuardClient extends Eventverse {
    * @private
    */
   _boot() {
-
     const wsProtocol = this._options.secure ? 'wss' : 'ws';
 
     this._socket = new WebSocket(`${wsProtocol}://${window.location.host}/`);
@@ -65,7 +61,6 @@ export default class GameGuardClient extends Eventverse {
     this._socket.addEventListener('message', (message) => this._onMessage(message));
 
     this._socket.addEventListener('close', (ev) => this._onClose(ev));
-
   }
 
   /**
@@ -75,7 +70,6 @@ export default class GameGuardClient extends Eventverse {
    * @private
    */
   _onOpen() {
-
     const playerId = this._clientData.getPlayerId();
 
     const message = new Message('player-joined', playerId);
@@ -83,7 +77,6 @@ export default class GameGuardClient extends Eventverse {
     this._socket.send(message.stringify());
 
     this.emit('open', playerId);
-
   }
 
   /**
@@ -92,15 +85,11 @@ export default class GameGuardClient extends Eventverse {
    * @param {string} message The message Object received from the server.
    */
   _onMessage(message) {
-
-    console.log('blah');
-
     const parsed = JSON.parse(message.data);
 
     const msg = new Message(parsed.type, parsed.content);
 
     this.emit('message', msg);
-
   }
 
   /**
@@ -110,9 +99,6 @@ export default class GameGuardClient extends Eventverse {
    * @property {Event} ev The WebSocket close event Object.
    */
   _onClose(ev) {
-
     this.emit('close', ev);
-
   }
-
 }

@@ -7,12 +7,10 @@ const EventEmitter = require('events').EventEmitter;
  * Players handles creating, managing, and removing players from the game.
  */
 module.exports = class Players extends EventEmitter {
-
   /**
    * @param {Storage} storage A reference to the Storage module to keep track of player states.
    */
   constructor(storage) {
-
     super();
 
     /**
@@ -32,7 +30,6 @@ module.exports = class Players extends EventEmitter {
      * @property {Array<Player>}
      */
     this._players = [];
-
   }
 
   /**
@@ -55,7 +52,6 @@ module.exports = class Players extends EventEmitter {
    * @param {Object} req The http request connection Object of the player to add.
    */
   _add(id, ws, req) {
-
     const player = new Player(id, ws, req);
 
     player.on('kick', (player, reason) => this._onkick(player, reason));
@@ -65,7 +61,6 @@ module.exports = class Players extends EventEmitter {
     this._players.push(player);
 
     this.emit('player-joined', player);
-
   }
 
   /**
@@ -79,11 +74,9 @@ module.exports = class Players extends EventEmitter {
    * @param {Player} player The player to remove from the game server.
    */
   _remove(player) {
-
     this._players = this._players.filter(pl => pl.id !== player.id);
 
     this.emit('player-left', player);
-
   }
 
   /**
@@ -98,11 +91,9 @@ module.exports = class Players extends EventEmitter {
    * @param {string} reason The reason as to why the player was kicked from the game.
    */
   _onkick(player, reason) {
-
     this._remove(player);
 
     this.emit('player-kicked', player, reason);
-
   }
 
   /**
@@ -120,13 +111,10 @@ module.exports = class Players extends EventEmitter {
    * @param {string} info.id The IP or id of the player to add to the list of players banned from the game.
    */
   _onban(player, info) {
-
     this._storage._ban(info.id);
 
     this._remove(player);
 
     this.emit('player-banned', player, info.reason);
-
   }
-
 };

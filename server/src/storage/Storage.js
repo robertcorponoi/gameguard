@@ -8,12 +8,10 @@ const Datastore = require('nedb');
  * NOTE: Database saving comingi soon.
  */
 module.exports = class Storage {
-
   /**
    * @param {Options} options The options passed to GameGuard on initialization.
    */
   constructor(options) {
-
     /**
      * A reference to the options passed to GameGuard on initialization.
      * 
@@ -31,7 +29,6 @@ module.exports = class Storage {
      * @property {Datastore}
      */
     this._db = new Datastore({ filename: this._options.db, autoload: true });
-
   }
 
   /**
@@ -42,21 +39,15 @@ module.exports = class Storage {
    * @param {string} id The id or IP of the player banned.
    */
   _ban(id) {
-
     return new Promise((resolve, reject) => {
-
       const banned = { type: 'ban', id: id };
 
       this._db.insert(banned, (err) => {
-
         if (err) reject(err);
 
         resolve();
-
       });
-
     });
-
   }
 
   /**
@@ -67,19 +58,12 @@ module.exports = class Storage {
    * @returns {Array<string>}
    */
   _banned() {
-
     return new Promise((resolve, reject) => {
-
       this._db.find({ type: 'ban' }, { _id: 0, type: 0 }, (err, docs) => {
-
         if (err) reject(err);
 
         resolve(docs);
-
       });
-
     });
-
   }
-
 };

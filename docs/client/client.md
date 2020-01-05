@@ -12,7 +12,8 @@ Table of Contents
 To initialize the client, use:
 
 ```js
-import GameGuardClient from './path/to/gameguardclient.js';
+// Browser
+import GameGuardClient from 'node_modules/gameguard/gameguardclient.js';
 
 const ggc = new GameGuardClient();
 

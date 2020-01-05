@@ -7,9 +7,7 @@ const EventEmitter = require('events').EventEmitter;
  * Rooms is used to create, manage, and remove rooms.
  */
 module.exports = class Rooms extends EventEmitter {
-
   constructor() {
-
     super();
 
     /**
@@ -20,7 +18,6 @@ module.exports = class Rooms extends EventEmitter {
      * @property {Array<Room>}
      */
     this._rooms = [];
-
   }
 
   /**
@@ -37,7 +34,6 @@ module.exports = class Rooms extends EventEmitter {
    * @param {number} [capacity=Infinity] The maximum number of players that can be in this room.
    */
   create(name, capacity = Infinity) {
-
     for (const room of this.rooms) if (room.name === name) throw new Error('A room already exists with the name provided');
 
     const room = new Room(name, capacity);
@@ -47,7 +43,6 @@ module.exports = class Rooms extends EventEmitter {
     this.emit('room-created', room);
 
     return room;
-
   }
 
   /**
@@ -56,11 +51,8 @@ module.exports = class Rooms extends EventEmitter {
    * @param {string} name The name of the room to destroy.
    */
   destroy(name) {
-
     this._rooms = this._rooms.filter(room => room.name !== name);
 
     this.emit('room-destroyed', name);
-
   }
-
 }

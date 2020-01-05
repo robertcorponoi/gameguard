@@ -4,13 +4,11 @@
  * A Room is used to arbitraily group players together.
  */
 module.exports = class Room {
-
   /**
    * @param {string} name The name of this room.
    * @param {number} capacity The maximum number of players that can be in this room.
    */
   constructor(name, capacity) {
-
     /**
      * The name of this room.
      * 
@@ -46,7 +44,6 @@ module.exports = class Room {
      * @property {Array<Player>}
      */
     this._players = [];
-
   }
 
   /**
@@ -86,11 +83,9 @@ module.exports = class Room {
    * @param {number} newCapacity The new maximum number of players that can be in this room.
    */
   set capacity(newCapacity) {
-
     if (newCapacity < this.playerCount) throw new Error('The new capacity is lower than the current amount of players in this room');
 
     this._capacity = newCapacity;
-
   }
 
   /**
@@ -101,13 +96,11 @@ module.exports = class Room {
    * @param {Player} player The player to add to this room.
    */
   add(player) {
-
     if (this.playerCount === this.capacity) throw new Error(`Room ${this.name} is at capacity`);
 
     this._players.push(player);
 
     this._playerCount++;
-
   }
 
   /**
@@ -116,20 +109,16 @@ module.exports = class Room {
    * @param {Player} player The player to remove from this room.
    */
   remove(player) {
-
     this._players = this._players.filter(p => p !== player);
 
     this._playerCount--;
-
   }
 
   /**
    * Removes all players from this room.
    */
   clear() {
-
     this._players = [];
-
   }
 
   /**
@@ -139,11 +128,8 @@ module.exports = class Room {
    * @param {string} message The message to send to every player in this room.
    */
   broadcast(type, message) {
-
     this._players.map(player => {
       player.message(type, message);
     });
-
   }
-
 };

@@ -4,12 +4,10 @@
  * The System handles system events and contains methods that apply to all players and rooms.
  */
 module.exports = class System {
-
   /**
    * @param {Players} players A reference to the server's Players module.
    */
   constructor(players) {
-
     /**
      * A reference to the server's Players module.
      * 
@@ -18,7 +16,6 @@ module.exports = class System {
      * @property {Players}
      */
     this._players = players;
-
   }
 
   /**
@@ -28,9 +25,6 @@ module.exports = class System {
    * @param {string} message The message to send to all of the players connected to the server.
    */
   broadcast(type, message) {
-
     this._players._players.map(player => player.message(type, message));
-
   }
-
 };

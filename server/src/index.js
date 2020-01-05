@@ -13,14 +13,12 @@ const WebSocketServer = require('ws').Server;
  * GameGuard uses websockets to create a connection between the server and client versions and manage the players of the game.
  */
 module.exports = class GameGuard {
-
   /**
    * @param {http.Server|https.Server} server The server instance to bind to.
    * @param {Options} [options] The initialization options passed to GameGuard.
    * @param {string} [options.db] The path where the database file should be saved to.
    */
   constructor(server, options = {}) {
-
     /**
      * A reference to the server instance to bind to.
      * 
@@ -88,7 +86,6 @@ module.exports = class GameGuard {
      * Setup the responses to websocket events.
      */
     this._boot();
-
   }
 
   /**
@@ -118,13 +115,9 @@ module.exports = class GameGuard {
    * @private
    */
   _boot() {
-
     this._socket.on('connection', (ws, req) => {
-
       ws.on('message', (message) => this._onmessage(ws, req, message));
-
     });
-
   }
 
   /**
@@ -138,7 +131,6 @@ module.exports = class GameGuard {
    * @param {string} message The JSON stringified message from the client.
    */
   _onmessage(ws, req, message) {
-
     const parsed = JSON.parse(message);
 
     switch (parsed.type) {
@@ -170,9 +162,6 @@ module.exports = class GameGuard {
         //   });
 
         // break;
-
     }
-
   }
-
 };
