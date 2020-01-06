@@ -1,3 +1,7 @@
+0.4.2 / 2020-01-05
+==================
+* [MISC] Slightly cleaned up docs in preparation for new functionality.
+
 0.4.1 / 2020-01-05
 ==================
 * [HOTFIX] Added main property to package.json.

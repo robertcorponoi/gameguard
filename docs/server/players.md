@@ -36,9 +36,7 @@ This is emitted when the player has joined and their Player Object has been crea
 
 ```js
 gameguard.players.on('player-joined', (player) => {
-
   console.log(player);
-
 });
 ```
 
@@ -48,9 +46,7 @@ This is emitted when the player has left the server through either being disconn
 
 ```js
 gameguard.players.on('player-left', (player) => {
-
   console.log(player);
-
 });
 ```
 
@@ -60,9 +56,7 @@ This is emitted when the player has been kicked from the server. This event send
 
 ```js
 gameguard.players.on('player-kicked', (player, reason) => {
-
   console.log(player, reason);
-
 });
 ```
 
@@ -72,9 +66,7 @@ This is emitted when the player has been banned from the server. This event send
 
 ```js
 gameguard.players.on('player-banned', (player, reason) => {
-
   console.log(player, reason);
-
 });
 ```
 
