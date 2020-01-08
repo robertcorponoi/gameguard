@@ -45,13 +45,11 @@ module.exports = class Players extends EventEmitter {
    * This also emits a 'player-joined' event that can be listened to and it contains the Object of the player that
    * joined the game server.
    * 
-   * @private
-   * 
    * @param {string} id The id of the player to add to the game server.
    * @param {Object} ws The WebSocket connection Object of the player to add.
    * @param {Object} req The http request connection Object of the player to add.
    */
-  _add(id, ws, req) {
+  add(id, ws, req) {
     const player = new Player(id, ws, req);
 
     player.on('kick', (player, reason) => this._onkick(player, reason));

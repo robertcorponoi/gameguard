@@ -89,21 +89,21 @@ module.exports = class GameGuard {
   }
 
   /**
-   * Gets the reference to the Players module.
+   * Returns the reference to the Players module.
    * 
    * @returns {Players}
    */
   get players() { return this._players; }
 
   /**
-   * Gets the reference to the Rooms module.
+   * Returns the reference to the Rooms module.
    * 
    * @returns {Rooms}
    */
   get rooms() { return this._rooms; }
 
   /**
-   * Gets the reference to the System module.
+   * Returns the reference to the System module.
    * 
    * @returns {System}
    */
@@ -141,7 +141,7 @@ module.exports = class GameGuard {
        */
       case 'player-joined':
 
-      this.players._add(parsed.content, ws, req);
+      this.players.add(parsed.content, ws, req);
         // this._storage._banned()
         //   .then(players => {
 

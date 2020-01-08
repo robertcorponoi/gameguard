@@ -1,3 +1,8 @@
+0.4.3 / 2020-01-08
+==================
+* [MISC] Made private methods that weren't really private public.
+* [MISC] Updated dependencies to their latest versions.
+
 0.4.2 / 2020-01-05
 ==================
 * [MISC] Slightly cleaned up docs in preparation for new functionality.

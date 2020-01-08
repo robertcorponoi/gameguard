@@ -25,6 +25,6 @@ module.exports = class System {
    * @param {string} message The message to send to all of the players connected to the server.
    */
   broadcast(type, message) {
-    this._players._players.map(player => player.message(type, message));
+    this._players.players.map(player => player.message(type, message));
   }
 };
