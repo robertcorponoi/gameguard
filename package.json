@@ -1,6 +1,6 @@
 {
   "name": "gameguard",
-  "version": "0.4.2",
+  "version": "0.4.3",
   "description": "A JavaScript game server for managing your game's players and state",
   "main": "server/src/index.js",
   "module": "gameguardclient.js",
