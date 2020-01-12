@@ -1,4 +1,4 @@
-0.4.3 / 2020-01-08
+0.5.0 / 2020-01-08
 ==================
 * [FEATURE] Moved the client-side component to its own package, see the README for more.
 * [FEATURE] Messages now require a message object instead of type and content.
