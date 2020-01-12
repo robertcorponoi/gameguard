@@ -6,12 +6,10 @@ const EventEmitter = require('events').EventEmitter;
  * The Mock Client is used to test interactions between a real client and the GameGuard game server.
  */
 module.exports = class MockClient extends EventEmitter {
-
   /**
    * @param {string} id The id to use for this mock client.
    */
   constructor(id) {
-
     super();
 
     /**
@@ -45,7 +43,6 @@ module.exports = class MockClient extends EventEmitter {
      * @property {Object}
      */
     this.terminated = { status: false, reason: '' };
-
   }
 
   /**
@@ -54,9 +51,7 @@ module.exports = class MockClient extends EventEmitter {
    * @param {string} message The stringified message Object to send to the game server.
    */
   message(message) {
-
     this.emit('message', message, this, this.req);
-
   }
 
   /**
@@ -65,9 +60,7 @@ module.exports = class MockClient extends EventEmitter {
    * @param {string} message The message received from the game server.
    */
   send(message) {
-    
     this.messages.push(message);
-
   }
 
   /**
@@ -76,9 +69,6 @@ module.exports = class MockClient extends EventEmitter {
    * @param {string} reason The reason as to why the mock client's connection was terminated.
    */
   terminate(reason) {
-
     this.terminated = { status: true, reason: reason };
-
   }
-
 };

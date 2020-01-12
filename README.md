@@ -21,45 +21,85 @@ GameGuard is a JavaScript game server for managing your game's players and state
 **Table of Contents**
 
 - [Install](#install)
-- [Usage](#usage)
-  - [Server](#server)
-  - [Client](#client)
-- [Test](#test)
+- [Initialization](#initialization)
+- [Players](#players)
+- [Rooms](#rooms)
+- [System](#system)
+- [Tests](#tests)
 
 ## **Install**
 
-To install both the client and server side parts of Gameguard, you can use:
+To install GameGuard you need the server side package (this one) and then a client-side package. Currently only [gameguard-client](https://github.com/robertcorponoi/gameguard-client) is supported but in the future there will be guides on creating your own client side solution to communicate with GameGuard.
+
+To install GameGuard you can use:
 
 ```bash
 $ npm install gameguard
 ```
 
-## **Usage**
-
-GameGuard comes in two parts, the client side script and the server side script. The docs for each have been split to help keep things clear.
-
-To be able to use GameGuard, you must include both the GameGuardClient script on the client side and then GameGuard on the server side. Examples of how to include these in their relevant areas are in the above docs.
-
-### **Server**
-
-The documentation for the GameGuard server can be found [here](docs/server/server.md)
-
-### **Client**
-
-The documentation for the GameGuard client can be found [here](docs/client/client.md)
-
-## **Test**
-
-Tests for the client are still evolving as the client's functionality expands but to run the tests for the server you can use:
+and if you need gameguard-client, you can use:
 
 ```bash
-$ npm run test:server
+$ npm install gameguard-client
 ```
 
-and to run test for the client, you can use:
+These used to be one package originally but it was harder to maintain and bundle both of them so they have been split up.
+
+**Note:** The documentation for gameguard-client will not be covered here but you can head over to the [gameguard-client documentation](https://github.com/robertcorponoi/gameguard-client#README.md) for client side usage.
+
+## **Initialization**
+
+To initialize GameGuard, you have to initialize it with a reference to a http or https server.
+
+and example of doing this with my personal favorite, fastify, is as follows:
+
+```js
+'use strict'
+
+const path = require('path');
+const fastify = require('fastify')({ logger: true });
+
+const GameGuard = require('gameguard');
+
+const gg = new GameGuard(fastify.server);
+
+fastify.listen(3000, (err, address) => {
+  if (err) throw err;
+
+  fastify.log.info(`server listening on ${address}`);
+});
+```
+
+Notice how we pass fastify's server instance to GameGuard so that GameGuard can use it to communicate with the client.
+
+The [http-server-examples docs](docs/http-server-examples.md) describe how you can use easily use GameGuard with different server frameworks such as fastify, express, and koa.
+
+## **Players**
+
+At it's core, GameGuard works around taking clients and turning them into players.
+
+To see all of the properties, events, and methods available to use with players, check out the [player documentation](docs/players.md).
+
+## **Rooms**
+
+Rooms can be used to group players together so that you can more easily manage them and broadcast messages to all players in a room.
+
+To see the properties, events, and methods available to use with the Rooms modules such as creating or destroying rooms, check out the [rooms documentation](docs/rooms.md).
+
+Once you create a room, you can use all of the properties and methods available for individual rooms on that create room. To see all of the properties, events, and methods available to use on any room created through the Rooms module, check out the [room documentation](docs/room.md).
+
+## **System**
+
+System is used to perform actions that affect every player in the server, regardless of the room they are in.
+
+To see all of the properties, events, and methods available to use with the system, check out the [system documentation](docs/system.md).
+
+## **Tests**
+
+To run the tests for GameGuard, you can use:
 
 ```bash
-$ npm run test:client
+$ npm run test
 ```
 
 ## **License**
