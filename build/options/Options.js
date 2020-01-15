@@ -13,11 +13,23 @@ class Options {
      */
     constructor(options) {
         /**
-         * The path to where the database file should be saved to.
+         * The type of persistent storage to use with GameGuard.
+         *
+         * The current available options are 'mongodb' or 'local'.
          *
          * @property {string}
+         *
+         * @default 'local'
          */
-        this.db = path_1.default.resolve(process.cwd(), 'db', 'gameguard.db');
+        this.storageMethod = 'local';
+        /**
+         * If local storage is chosen, then the path to where the db file should be created can be specified.
+         *
+         * @property {string}
+         *
+         * @default `process.cwd()/db/gameguard.db`
+         */
+        this.localDbPath = path_1.default.resolve(process.cwd(), 'db', 'gameguard.db');
         Object.assign(this, options);
     }
 }

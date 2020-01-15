@@ -7,11 +7,24 @@ import path from 'path';
  */
 export default class Options {
   /**
-   * The path to where the database file should be saved to.
+   * The type of persistent storage to use with GameGuard.
+   * 
+   * The current available options are 'mongodb' or 'local'.
    * 
    * @property {string}
+   * 
+   * @default 'local'
    */
-  db: string = path.resolve(process.cwd(), 'db', 'gameguard.db');
+  storageMethod: string = 'local';
+
+  /**
+   * If local storage is chosen, then the path to where the db file should be created can be specified.
+   * 
+   * @property {string}
+   * 
+   * @default `process.cwd()/db/gameguard.db`
+   */
+  localDbPath: string = path.resolve(process.cwd(), 'db', 'gameguard.db');
 
   /**
    * @param {Object} options The options passed to GameGuard on initialization.

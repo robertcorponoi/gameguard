@@ -1,0 +1,20 @@
+<!doctype html>
+<head>
+  <title>Test</title>
+</head>
+<body>
+  <script type="module">
+    import GameGuardClient from './gameguard-client.js';
+    
+    const ggc = new GameGuardClient();
+
+    ggc.on('open', (playerId) => {
+      console.log('hi', playerId);
+    });
+
+    ggc.on('close', (reason) => {
+      console.log('bye', reason);
+    });
+  </script>
+</body>
+</html>

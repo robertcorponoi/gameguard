@@ -31,12 +31,23 @@ const ids = [
 
 const dbPath = path.resolve(process.cwd(), 'tests', 'server', 'gameguard.db');
 
-const options = { db: dbPath };
+const options = {
+  storageMethod: 'local',
+  localDbPath: dbPath 
+};
 
 /**
  * Before each test clear the database file so it doesn't affect future tests.
  */
-beforeEach(() => fs.truncateSync(dbPath, 0));
+beforeEach(function (done) {
+  this.timeout(5000);
+
+//  fs.truncateSync(dbPath, 0);
+done();
+ /* gameGuard._storage._db.remove({}, { multi: true }, function (err, numRemoved) {
+    done();
+  });*/
+});
 
 /**
  * Before any test is run, we create a basic http server and use it to run the game server on.
@@ -46,7 +57,11 @@ before(done => {
 
   gameGuard = new GameGuard(server, options);
 
-  server.listen(7575, () => done());
+  //server.listen(7575, () => done());
+
+  gameGuard._storage._db.remove({}, { multi: true }, function (err, numRemoved) { 
+    server.listen(7575, () => done());
+  });
 });
 
 /**
@@ -67,7 +82,7 @@ after(done => {
  * PLAYERS
  * ============================================================================================== 
  */
-describe('Players', () => {
+/*describe('Players', () => {
   describe('Connecting players', () => {
     it('should add the player to the Array of connected players when the player connects', done => {
       addMockClients(1);
@@ -148,10 +163,9 @@ describe('Players', () => {
       }, 1500);
     });
   });
-
+*/
   describe('Kicking and banning players', () => {
-
-    it('should kick a player', done => {
+    /*it('should kick a player', done => {
       const spy = sinon.spy();
 
       gameGuard.players.on('player-kicked', spy);
@@ -221,30 +235,41 @@ describe('Players', () => {
 
         done();
       }, 1000);
-    });
+    });*/
 
-    it('should ban a player and add them to the banned players list', async () => {
-      gameGuard.players.on('player-connected', player => player.ban('for testing'));
+    it('should ban a player and add them to the banned players list', async function(done) {
+      this.timeout(10000);
+
+      gameGuard.players.on('player-connected', player => {
+        //console.log(player);
+        
+        player.ban('for testing');
+      });
+
+      //gameGuard.players.on('player-banned', (reason) => console.log('BBBBBBBBBBBBBB', reason));
 
       addMockClients();
 
       const banned = await gameGuard._storage.banned();
 
       setTimeout(() => {
+        console.log('AAAAAAAAAAAAAAAA', banned);
         chai.expect(banned[0].id).to.equal('1dfd0497-a2f3-43de-9a55-d965bdde9d70');
 
         gameGuard.players.removeAllListeners();
-      }, 1500);
+
+        done();
+      }, 5000);
     });
   });
-});
+//});
 
 /**
  * ==============================================================================================
  * ROOMS
  * ============================================================================================== 
  */
-describe('Rooms', () => {
+/*describe('Rooms', () => {
   describe('Creating rooms', () => {
     it('should create a room with default capacity', () => {
       const room1 = gameGuard.rooms.create('room1');
@@ -361,11 +386,9 @@ describe('Rooms', () => {
       addMockClients();
 
       setTimeout(() => {
-
         chai.expect(room1._players.length).to.equal(1) && chai.expect(room1._players[0]._id).to.equal(ids[0]);
 
         done();
-
       }, 1500);
     });
 
@@ -441,14 +464,14 @@ describe('Rooms', () => {
       }, 1500);
     });
   });
-});
+});*/
 
 /**
  * ==============================================================================================
  * SYSTEM
  * ============================================================================================== 
  */
-describe('Messaging all players in the server', () => {
+/*describe('Messaging all players in the server', () => {
   it('should broadcast a message to all of the players in the server', function (done) {
     this.timeout(5000);
 
@@ -464,7 +487,7 @@ describe('Messaging all players in the server', () => {
 
     }, 1500)
   });
-});
+});*/
 
 /**
  * Joins one or more mock clients to the game server.

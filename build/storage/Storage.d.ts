@@ -20,9 +20,24 @@ export default class Storage {
      */
     private _db;
     /**
+     * The signal that is dispatched when the database is ready to use.
+     *
+     * @private
+     *
+     * @property {Hypergiant}
+     */
+    private _onReady;
+    /**
      * @param {Options} options A reference to the options passed to GameGuard on initialization.
      */
     constructor(options: Options);
+    /**
+     * Sets up the database.
+     *
+     * @async
+     * @private
+     */
+    private _setup;
     /**
      * Returns the list of currently banned players.
      *
