@@ -17,23 +17,25 @@ const GameGuard = require('../../build/index');
  */
 const server = app.listen(3000, () => console.log('Listening on port 3000'));
 
+const options = { storageMethod: 'mongodb' };
+
 /**
  * Start an instance of GameGuard with the express server.
  */
-const gg = new GameGuard(server);
+const gg = new GameGuard(server, options);
 
 /**
  * When a player joins, log it to the console.
  */
 gg.players.on('player-connected', (player) => {
-  console.log('PLAYER JOINED', player);
+  // console.log('PLAYER JOINED', player.id, player._id);
 });
 
 /**
  * When a player leaves, log it to the console.
  */
 gg.players.on('player-disconnected', (player) => {
-  console.log('PLAYER LEFT', player.id);
+//  console.log('PLAYER LEFT', player.id);
 });
 
 /*gg.players.on('player-kicked', (player, reason) => {

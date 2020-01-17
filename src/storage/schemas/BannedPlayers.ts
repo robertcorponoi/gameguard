@@ -4,9 +4,8 @@ import mongoose from 'mongoose';
 
 const Schema = mongoose.Schema;
 
-const PlayerModel = new Schema({
+const BannedPlayers = new Schema({
   pid: String,
-  status: String
 });
 
-export default PlayerModel;
+export default BannedPlayers;

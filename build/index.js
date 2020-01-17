@@ -35,7 +35,7 @@ module.exports = class GameGuard {
         this._storage = new Storage_1.default(this._options);
         this._players = new Players_1.default(this._storage);
         this._system = new System_1.default(this._players);
-        this._boot();
+        this._storage.onReady.add(() => this._boot());
     }
     /**
      * Returns a reference to the Players module.
@@ -90,11 +90,13 @@ module.exports = class GameGuard {
         const messageParsed = new Message_1.default(messageObject.type, messageObject.contents);
         switch (messageParsed.type) {
             case 'player-connected':
-                this._storage.banned()
-                    .then((bans) => {
+                /*        this._storage.banned()
+                  .then((bans) => {
                     console.log(bans);
                     this.players.add(messageParsed.contents, socket, request);
-                });
+                  });*/
+                //console.log('from index', messageParsed.contents);
+                this.players.add(messageParsed.contents, socket, request);
                 break;
         }
     }

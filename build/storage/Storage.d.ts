@@ -1,3 +1,4 @@
+import Hypergiant from 'hypergiant';
 import Options from '../options/Options';
 /**
  * The Storage modules handling the storing of persistent server data to an encryped file or database.
@@ -12,13 +13,28 @@ export default class Storage {
      */
     private _options;
     /**
+     * A reference to the mongoose connection.
+     *
+     * @private
+     *
+     * @property {mongoose.Connection}
+     */
+    private _db;
+    /**
+     * A reference to the Player model.
+     *
+     * @private
+     *
+     * @property {mongoose.Model}
+     */
+    private _BannedPlayer;
+    /**
      * A reference to the nedb datastore.
      *
      * @private
      *
      * @property {Datastore}
      */
-    private _db;
     /**
      * The signal that is dispatched when the database is ready to use.
      *
@@ -32,6 +48,12 @@ export default class Storage {
      */
     constructor(options: Options);
     /**
+     * Returns the onReady signal.
+     *
+     * @returns {Hypergiant}
+     */
+    get onReady(): Hypergiant;
+    /**
      * Sets up the database.
      *
      * @async
@@ -39,15 +61,17 @@ export default class Storage {
      */
     private _setup;
     /**
-     * Returns the list of currently banned players.
+     * Bans a player and saves it to the persistent storage.
      *
-     * @returns {Array<string>}
+     * @param {string} playerId The id of the player to ban.
      */
-    banned(): Promise<Array<any>>;
+    ban(playerId: string): void;
     /**
-     * Adds a player to the persistent list of banned players.
+     * Checks to see if a player id is banned or not.
      *
-     * @param {string} banId The id or ip of the player to ban, depending on what type of ban was chosen.
+     * @param {string} playerId The id of the player to check if banned or not.
+     *
+     * @returns {Promise<boolean>} Returns true if the player has been banned or false otherwise.
      */
-    ban(banId: string): Promise<any>;
+    isBanned(playerId: string): Promise<boolean>;
 }
