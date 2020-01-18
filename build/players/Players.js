@@ -42,7 +42,7 @@ class Players extends events_1.default.EventEmitter {
     add(id, socket, request) {
         const player = new Player_1.default(id, socket, request);
         player.on('kick', (player, reason) => this._onkick(player, reason));
-        player.on('ban', (player, reason, banInfo) => this._onban(player, reason, banInfo));
+        player.on('ban', (player, reason) => this._onban(player, reason));
         this._connected.push(player);
         this.emit('player-connected', player);
     }
@@ -82,10 +82,9 @@ class Players extends events_1.default.EventEmitter {
      *
      * @param {Player} player The player that was banned.
      * @param {string} reason The reason as to why the player was banned.
-     * @param {string} banId The ip or id of the player, depending on what type of ban was chosen.
      */
-    _onban(player, reason, banId) {
-        this._storage.ban(banId);
+    _onban(player, reason) {
+        this._storage.ban(player.id);
         this._remove(player);
         this.emit('player-banned', player, reason);
     }

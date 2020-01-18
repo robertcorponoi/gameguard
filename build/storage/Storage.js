@@ -67,16 +67,17 @@ class Storage {
         return __awaiter(this, void 0, void 0, function* () {
             switch (this._options.storageMethod) {
                 case 'mongodb':
+                    this._db = mongoose_1.default.connection;
+                    this._db.on('error', console.error.bind(console, 'connection error:'));
+                    this._db.once('open', () => __awaiter(this, void 0, void 0, function* () {
+                        yield this._clearDb();
+                        const test = yield this._BannedPlayer.find({});
+                        console.log('banned players list: ', test);
+                        this._onReady.dispatch();
+                    }));
                     yield mongoose_1.default.connect('mongodb://localhost/gameguard', {
                         useNewUrlParser: true,
                         useUnifiedTopology: true
-                    });
-                    this._db = mongoose_1.default.connection;
-                    console.log(this._db);
-                    this._db.on('error', console.error.bind(console, 'connection error:'));
-                    this._db.once('open', () => {
-                        this._onReady.dispatch();
-                        console.log('openened');
                     });
                     break;
                 /*default:
@@ -89,13 +90,23 @@ class Storage {
         });
     }
     /**
+     * Removes all players from the banned players list.
+     *
+     * This is just for testing.
+     */
+    _clearDb() {
+        return __awaiter(this, void 0, void 0, function* () {
+            yield this._BannedPlayer.deleteMany({});
+        });
+    }
+    /**
      * Bans a player and saves it to the persistent storage.
      *
      * @param {string} playerId The id of the player to ban.
      */
     ban(playerId) {
         const bannedPlayer = new this._BannedPlayer({ pid: playerId });
-        this._BannedPlayer.update({ pid: playerId }, { $setOnInsert: bannedPlayer }, { upsert: true }, (err, numAffected) => {
+        this._BannedPlayer.updateOne({ pid: playerId }, { $setOnInsert: bannedPlayer }, { upsert: true }, (err, numAffected) => {
             if (err)
                 return console.error(err);
         });
@@ -112,7 +123,10 @@ class Storage {
             this._BannedPlayer.findOne({ pid: playerId }, (err, entry) => {
                 if (err)
                     reject(err);
-                resolve(true);
+                if (entry)
+                    resolve(true);
+                else
+                    resolve(false);
             });
         });
     }

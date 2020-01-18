@@ -28,6 +28,10 @@ const gg = new GameGuard(server, options);
  * When a player joins, log it to the console.
  */
 gg.players.on('player-connected', (player) => {
+  setTimeout(() => {
+    console.log('banning...');
+    player.ban('wtf');
+  }, 5000);
   // console.log('PLAYER JOINED', player.id, player._id);
 });
 
@@ -35,7 +39,7 @@ gg.players.on('player-connected', (player) => {
  * When a player leaves, log it to the console.
  */
 gg.players.on('player-disconnected', (player) => {
-//  console.log('PLAYER LEFT', player.id);
+  //  console.log('PLAYER LEFT', player.id);
 });
 
 /*gg.players.on('player-kicked', (player, reason) => {

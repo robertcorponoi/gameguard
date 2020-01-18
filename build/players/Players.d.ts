@@ -72,7 +72,6 @@ export default class Players extends events.EventEmitter {
      *
      * @param {Player} player The player that was banned.
      * @param {string} reason The reason as to why the player was banned.
-     * @param {string} banId The ip or id of the player, depending on what type of ban was chosen.
      */
     private _onban;
 }

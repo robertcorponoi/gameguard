@@ -90,13 +90,14 @@ module.exports = class GameGuard {
         const messageParsed = new Message_1.default(messageObject.type, messageObject.contents);
         switch (messageParsed.type) {
             case 'player-connected':
-                /*        this._storage.banned()
-                  .then((bans) => {
-                    console.log(bans);
-                    this.players.add(messageParsed.contents, socket, request);
-                  });*/
-                //console.log('from index', messageParsed.contents);
-                this.players.add(messageParsed.contents, socket, request);
+                this._storage.isBanned(messageParsed.contents)
+                    .then((isBanned) => {
+                    console.log('hey ', isBanned);
+                    if (isBanned)
+                        socket.close(4000, 'you are banned fool');
+                    else
+                        this.players.add(messageParsed.contents, socket, request);
+                });
                 break;
         }
     }

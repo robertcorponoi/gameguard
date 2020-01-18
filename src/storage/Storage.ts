@@ -82,21 +82,25 @@ export default class Storage {
   private async _setup() {
     switch (this._options.storageMethod) {
       case 'mongodb':
+        this._db = mongoose.connection;
+
+        this._db.on('error', console.error.bind(console, 'connection error:'));
+
+        this._db.once('open', async () => {
+          await this._clearDb();
+
+          const test = await this._BannedPlayer.find({});
+
+          console.log('banned players list: ', test);
+
+          this._onReady.dispatch();
+        });
+
         await mongoose.connect('mongodb://localhost/gameguard', {
           useNewUrlParser: true,
           useUnifiedTopology: true
         });
 
-        this._db = mongoose.connection;
-
-        console.log(this._db);
-
-        this._db.on('error', console.error.bind(console, 'connection error:'));
-
-        this._db.once('open', () => {
-          this._onReady.dispatch();
-          console.log('openened');
-        });
         break;
         /*default:
         // By default, we use the local storage method.
@@ -108,6 +112,15 @@ export default class Storage {
   }
 
   /**
+   * Removes all players from the banned players list.
+   *
+   * This is just for testing.
+   */
+  private async _clearDb() {
+    await this._BannedPlayer.deleteMany({});
+  }
+
+  /**
    * Bans a player and saves it to the persistent storage.
    *
    * @param {string} playerId The id of the player to ban.
@@ -115,7 +128,7 @@ export default class Storage {
   ban(playerId: string) {
     const bannedPlayer = new this._BannedPlayer({ pid: playerId }); 
 
-    this._BannedPlayer.update(
+    this._BannedPlayer.updateOne(
       { pid: playerId },
       { $setOnInsert: bannedPlayer },
       { upsert: true },
@@ -136,46 +149,10 @@ export default class Storage {
     return new Promise((resolve, reject) => {
       this._BannedPlayer.findOne({ pid: playerId }, (err: Error, entry: any) => {
         if (err) reject(err);
-
-        resolve(true);
+        
+        if (entry) resolve(true);
+        else resolve(false);
       });
     });
   }
-
-  /**
-   * Returns the list of currently banned players.
-   * 
-   * @returns {Array<string>}
-   */
-    /*banned(): Promise<Array<any>> {
-    return new Promise((resolve: any, reject: any) => {
-      this._db.find({ type: 'ban' }, (err: Error, docs: any) => {
-console.log(err, docs);
-        if (err) reject(err);
-        resolve(docs);
-      });
-    });
-  }*/
-
-  /**
-   * Adds a player to the persistent list of banned players.
-   * 
-   * @param {string} banId The id or ip of the player to ban, depending on what type of ban was chosen.
-   */
-    /*ban(banId: string): Promise<any> {
-
-    console.log('are we here', banId);
-    return new Promise((resolve: any, reject: any) => {
-      const entry: Object = {
-        type: 'ban',
-        id: banId
-      };
-
-      this._db.insert(entry, (err: Error) => {
-        if (err) reject(err);
-
-        resolve();
-      });
-    });
-  }*/
 }
