@@ -70,9 +70,6 @@ class Storage {
                     this._db = mongoose_1.default.connection;
                     this._db.on('error', console.error.bind(console, 'connection error:'));
                     this._db.once('open', () => __awaiter(this, void 0, void 0, function* () {
-                        yield this._clearDb();
-                        const test = yield this._BannedPlayer.find({});
-                        console.log('banned players list: ', test);
                         this._onReady.dispatch();
                     }));
                     yield mongoose_1.default.connect('mongodb://localhost/gameguard', {
@@ -97,6 +94,16 @@ class Storage {
     _clearDb() {
         return __awaiter(this, void 0, void 0, function* () {
             yield this._BannedPlayer.deleteMany({});
+        });
+    }
+    /**
+     * Returns all of the players on the banned players list.
+     *
+     * This is just for testing.
+     */
+    _getBanned() {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield this._BannedPlayer.find({});
         });
     }
     /**

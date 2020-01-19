@@ -1,3 +1,9 @@
+0.5.1 / 2020-01-18
+==================
+* [FEATURE] Added mongodb as the default storage method.
+* [BREAKING] Local storage is broken as of this patch and so mongodb is the only option until next path when support for mysql is added.
+* [MISC] Added breaking change note to README.
+
 0.5.0 / 2020-01-08
 ==================
 * [FEATURE] Moved the client-side component to its own package, see the README for more.

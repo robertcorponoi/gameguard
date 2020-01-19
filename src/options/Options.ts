@@ -15,7 +15,7 @@ export default class Options {
    * 
    * @default 'local'
    */
-  storageMethod: string = 'local';
+  storageMethod: string = 'mongodb';
 
   /**
    * If local storage is chosen, then the path to where the db file should be created can be specified.

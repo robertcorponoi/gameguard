@@ -67,6 +67,12 @@ export default class Storage {
      */
     private _clearDb;
     /**
+     * Returns all of the players on the banned players list.
+     *
+     * This is just for testing.
+     */
+    private _getBanned;
+    /**
      * Bans a player and saves it to the persistent storage.
      *
      * @param {string} playerId The id of the player to ban.

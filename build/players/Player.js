@@ -54,7 +54,7 @@ class Player extends events_1.default.EventEmitter {
      * @param {string} [reason=''] The reason as to why this player's connection was closed.
      */
     kick(reason = '') {
-        this._socket.terminate(reason);
+        this._socket.close(4000, reason);
         this.emit('kick', this, reason);
     }
     /**

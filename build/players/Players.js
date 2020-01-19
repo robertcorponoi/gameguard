@@ -47,6 +47,17 @@ class Players extends events_1.default.EventEmitter {
         this.emit('player-connected', player);
     }
     /**
+     * Automatically rejects a player when banned player attempst to connect.
+     *
+     * @param {string} id The id of the client connecting to the server.
+     * @param {*} socket The WebSocket connection object of the client.
+     * @param {*} request The http request object of the client.
+     */
+    reject(id, socket, request) {
+        socket.close(4000, 'youre banned fool');
+        this.emit('player-rejected', id);
+    }
+    /**
      * Removes a player from the list of connected players.
      *
      * This also emits the `player-disconnected` event that contains the Player object as a parameter.

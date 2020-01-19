@@ -32,7 +32,7 @@ const ids = [
 const dbPath = path.resolve(process.cwd(), 'tests', 'server', 'gameguard.db');
 
 const options = {
-  storageMethod: 'local',
+  storageMethod: 'mongodb',
   localDbPath: dbPath 
 };
 
@@ -42,11 +42,13 @@ const options = {
 beforeEach(function (done) {
   this.timeout(5000);
 
-//  fs.truncateSync(dbPath, 0);
-done();
- /* gameGuard._storage._db.remove({}, { multi: true }, function (err, numRemoved) {
-    done();
-  });*/
+  gameGuard._storage._clearDb()
+    .then(() => {
+      gameGuard._storage._getBanned()
+        .then((banned) => {
+          done();
+        });
+    });
 });
 
 /**
@@ -57,11 +59,7 @@ before(done => {
 
   gameGuard = new GameGuard(server, options);
 
-  //server.listen(7575, () => done());
-
-  gameGuard._storage._db.remove({}, { multi: true }, function (err, numRemoved) { 
-    server.listen(7575, () => done());
-  });
+  server.listen(7575, () => done());
 });
 
 /**
@@ -82,7 +80,7 @@ after(done => {
  * PLAYERS
  * ============================================================================================== 
  */
-/*describe('Players', () => {
+describe('Players', () => {
   describe('Connecting players', () => {
     it('should add the player to the Array of connected players when the player connects', done => {
       addMockClients(1);
@@ -163,9 +161,9 @@ after(done => {
       }, 1500);
     });
   });
-*/
+
   describe('Kicking and banning players', () => {
-    /*it('should kick a player', done => {
+    it('should kick a player', done => {
       const spy = sinon.spy();
 
       gameGuard.players.on('player-kicked', spy);
@@ -235,41 +233,72 @@ after(done => {
 
         done();
       }, 1000);
-    });*/
+    });
+    
+    it('should ban a player and prevent them from connecting the next time', function(done) {
+      this.timeout(15000);
 
-    it('should ban a player and add them to the banned players list', async function(done) {
-      this.timeout(10000);
+      const spy = sinon.spy();
+
+      let playerId;
+      let playersConnected = 0;
+
+      gameGuard.players.on('player-rejected', spy);
 
       gameGuard.players.on('player-connected', player => {
-        //console.log(player);
-        
+        playerId = player.id;
+
+        if (playersConnected < 1) player.ban('for testing');
+      });
+
+      addMockClients(1);
+
+      setTimeout(() => {
+        addMockClients(1);
+
+        setTimeout(() => {
+          chai.expect(spy.getCalls()[0].args[0]).to.equal(playerId);
+
+          gameGuard.players.removeAllListeners();
+
+          done();
+        }, 5000);
+      }, 5000);
+    });
+
+    it('should ban a player and add them to the banned players list', function(done) {
+      this.timeout(10000);
+
+      let id;
+
+      gameGuard.players.on('player-connected', player => {
+        id = player.id;
+
         player.ban('for testing');
       });
 
-      //gameGuard.players.on('player-banned', (reason) => console.log('BBBBBBBBBBBBBB', reason));
-
       addMockClients();
 
-      const banned = await gameGuard._storage.banned();
-
       setTimeout(() => {
-        console.log('AAAAAAAAAAAAAAAA', banned);
-        chai.expect(banned[0].id).to.equal('1dfd0497-a2f3-43de-9a55-d965bdde9d70');
+        gameGuard._storage.isBanned(id)
+          .then((banned) => {
+            chai.expect(banned).to.be.true;
 
-        gameGuard.players.removeAllListeners();
+            gameGuard.players.removeAllListeners();
 
-        done();
+            done();
+          });
       }, 5000);
     });
   });
-//});
+});
 
 /**
  * ==============================================================================================
  * ROOMS
  * ============================================================================================== 
  */
-/*describe('Rooms', () => {
+describe('Rooms', () => {
   describe('Creating rooms', () => {
     it('should create a room with default capacity', () => {
       const room1 = gameGuard.rooms.create('room1');
@@ -464,14 +493,14 @@ after(done => {
       }, 1500);
     });
   });
-});*/
+});
 
 /**
  * ==============================================================================================
  * SYSTEM
  * ============================================================================================== 
  */
-/*describe('Messaging all players in the server', () => {
+describe('Messaging all players in the server', () => {
   it('should broadcast a message to all of the players in the server', function (done) {
     this.timeout(5000);
 
@@ -487,7 +516,7 @@ after(done => {
 
     }, 1500)
   });
-});*/
+});
 
 /**
  * Joins one or more mock clients to the game server.
@@ -495,9 +524,7 @@ after(done => {
  * @param {number} [count=1] The number of players to join to the gamae server.
  */
 function addMockClients(count = 1) {
-
   for (let i = 0; i < count; ++i) {
-
     mockClient = new MockClient(ids[i]);
 
     gameGuard._socket._events.connection(mockClient, mockClient.req);
@@ -505,7 +532,5 @@ function addMockClients(count = 1) {
     const playerJoined = JSON.stringify({ type: 'player-connected', contents: mockClient.id });
 
     mockClient.message(playerJoined);
-
   }
-
 }

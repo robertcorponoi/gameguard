@@ -87,12 +87,6 @@ export default class Storage {
         this._db.on('error', console.error.bind(console, 'connection error:'));
 
         this._db.once('open', async () => {
-          await this._clearDb();
-
-          const test = await this._BannedPlayer.find({});
-
-          console.log('banned players list: ', test);
-
           this._onReady.dispatch();
         });
 
@@ -118,6 +112,15 @@ export default class Storage {
    */
   private async _clearDb() {
     await this._BannedPlayer.deleteMany({});
+  }
+
+  /**
+   * Returns all of the players on the banned players list.
+   *
+   * This is just for testing.
+   */
+  private async _getBanned() {
+    return await this._BannedPlayer.find({});
   }
 
   /**
@@ -149,7 +152,7 @@ export default class Storage {
     return new Promise((resolve, reject) => {
       this._BannedPlayer.findOne({ pid: playerId }, (err: Error, entry: any) => {
         if (err) reject(err);
-        
+
         if (entry) resolve(true);
         else resolve(false);
       });

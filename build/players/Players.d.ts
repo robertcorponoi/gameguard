@@ -43,6 +43,14 @@ export default class Players extends events.EventEmitter {
      */
     add(id: string, socket: any, request: any): void;
     /**
+     * Automatically rejects a player when banned player attempst to connect.
+     *
+     * @param {string} id The id of the client connecting to the server.
+     * @param {*} socket The WebSocket connection object of the client.
+     * @param {*} request The http request object of the client.
+     */
+    reject(id: string, socket: any, request: any): void;
+    /**
      * Removes a player from the list of connected players.
      *
      * This also emits the `player-disconnected` event that contains the Player object as a parameter.

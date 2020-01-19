@@ -21,7 +21,7 @@ class Options {
          *
          * @default 'local'
          */
-        this.storageMethod = 'local';
+        this.storageMethod = 'mongodb';
         /**
          * If local storage is chosen, then the path to where the db file should be created can be specified.
          *
