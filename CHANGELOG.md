@@ -1,7 +1,11 @@
+0.7.0 / 2020-01-19
+==================
+* [FEATURE] Matched version with gameguard-client. From this point forward both packages with matching version numbers will be guaranteed to work with each other.
+
 0.5.1 / 2020-01-18
 ==================
 * [FEATURE] Added mongodb as the default storage method.
-* [BREAKING] Local storage is broken as of this patch and so mongodb is the only option until next path when support for mysql is added.
+* [BREAKING] Local storage is broken as of this patch and so mongodb is the only option until the next storage update when support for mysql is added.
 * [MISC] Added breaking change note to README.
 
 0.5.0 / 2020-01-08

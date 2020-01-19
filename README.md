@@ -18,9 +18,11 @@ GameGuard is a JavaScript game server for managing your game's players and state
 
 </div>
 
-**Note:** As of 0.5.1 support for mongodb has been added but support for a local database has been deprecated. As of the next version support for mysql has been added.
+**Note:** As of 0.7.0 gameguard and gameguard-client installs that match versions will be guaranteed to work with each other.
 
-This is mostly due to pitfalls of local storage options and will not be re-implemented unless there is enough support for it. Feel free to voice your opinion about this as I love to hear other people's ponit of view on topics like this.
+**Note:** As of 0.5.1 support for mongodb has been added but support for a local database has been deprecated. In the next storage update, support for mysql will be added. 
+
+This is mostly due to pitfalls of local storage options and will not be re-implemented unless there is enough support for it. Please feel free to open an issue if you feel like you have a good case for it being re-implemented. 
 
 **Table of Contents**
 
