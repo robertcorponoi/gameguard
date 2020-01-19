@@ -99,7 +99,7 @@ export default class Player extends events.EventEmitter {
    * @param {string} [reason=''] The reason as to why this player's connection was closed.
    */
   kick(reason: string = '') {
-    this._socket.terminate(reason);
+    this._socket.close(4000, reason);
 
     this.emit('kick', this, reason);
   }
@@ -111,13 +111,11 @@ export default class Player extends events.EventEmitter {
    * This also emits the `ban` event with the player object, the ban reason, and their id or ip as parameters.
    * 
    * @param {string} [reason=''] The reason as to why this player's connection was closed and banned.
-   * @param {boolean} [banIp=false] Indicates whether the player should be ip banned or just profile banned.
    */
-  ban(reason: string = '', banIp: boolean = false) {
-    this._socket.terminate(reason);
+  ban(reason: string = '') {
+    this._socket.close(4000, reason);
+    // this._socket.terminate(reason);
 
-    const banInfo: string = banIp ? this.ip : this.id;
-
-    this.emit('ban', this, reason, banInfo);
+    this.emit('ban', this, reason);
   }
 }

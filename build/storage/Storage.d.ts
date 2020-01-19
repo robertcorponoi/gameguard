@@ -1,3 +1,4 @@
+import Hypergiant from 'hypergiant';
 import Options from '../options/Options';
 /**
  * The Storage modules handling the storing of persistent server data to an encryped file or database.
@@ -12,27 +13,77 @@ export default class Storage {
      */
     private _options;
     /**
+     * A reference to the mongoose connection.
+     *
+     * @private
+     *
+     * @property {mongoose.Connection}
+     */
+    private _db;
+    /**
+     * A reference to the Player model.
+     *
+     * @private
+     *
+     * @property {mongoose.Model}
+     */
+    private _BannedPlayer;
+    /**
      * A reference to the nedb datastore.
      *
      * @private
      *
      * @property {Datastore}
      */
-    private _db;
+    /**
+     * The signal that is dispatched when the database is ready to use.
+     *
+     * @private
+     *
+     * @property {Hypergiant}
+     */
+    private _onReady;
     /**
      * @param {Options} options A reference to the options passed to GameGuard on initialization.
      */
     constructor(options: Options);
     /**
-     * Returns the list of currently banned players.
+     * Returns the onReady signal.
      *
-     * @returns {Array<string>}
+     * @returns {Hypergiant}
      */
-    banned(): Promise<Array<any>>;
+    get onReady(): Hypergiant;
     /**
-     * Adds a player to the persistent list of banned players.
+     * Sets up the database.
      *
-     * @param {string} banId The id or ip of the player to ban, depending on what type of ban was chosen.
+     * @async
+     * @private
      */
-    ban(banId: string): Promise<any>;
+    private _setup;
+    /**
+     * Removes all players from the banned players list.
+     *
+     * This is just for testing.
+     */
+    private _clearDb;
+    /**
+     * Returns all of the players on the banned players list.
+     *
+     * This is just for testing.
+     */
+    private _getBanned;
+    /**
+     * Bans a player and saves it to the persistent storage.
+     *
+     * @param {string} playerId The id of the player to ban.
+     */
+    ban(playerId: string): void;
+    /**
+     * Checks to see if a player id is banned or not.
+     *
+     * @param {string} playerId The id of the player to check if banned or not.
+     *
+     * @returns {Promise<boolean>} Returns true if the player has been banned or false otherwise.
+     */
+    isBanned(playerId: string): Promise<boolean>;
 }

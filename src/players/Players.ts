@@ -57,11 +57,24 @@ export default class Players extends events.EventEmitter {
 
     player.on('kick', (player: Player, reason: string) => this._onkick(player, reason));
 
-    player.on('ban', (player: Player, reason: string, banInfo: string) => this._onban(player, reason, banInfo));
+    player.on('ban', (player: Player, reason: string) => this._onban(player, reason));
 
     this._connected.push(player);
 
     this.emit('player-connected', player);
+  }
+
+  /**
+   * Automatically rejects a player when banned player attempst to connect.
+   *
+   * @param {string} id The id of the client connecting to the server.
+   * @param {*} socket The WebSocket connection object of the client.
+   * @param {*} request The http request object of the client.
+   */
+  reject(id: string, socket: any, request: any) {
+    socket.close(4000, 'youre banned fool');
+
+    this.emit('player-rejected', id);
   }
 
   /**
@@ -104,10 +117,9 @@ export default class Players extends events.EventEmitter {
    * 
    * @param {Player} player The player that was banned.
    * @param {string} reason The reason as to why the player was banned.
-   * @param {string} banId The ip or id of the player, depending on what type of ban was chosen.
    */
-  private _onban(player: Player, reason: string, banId: string) {
-    this._storage.ban(banId);
+  private _onban(player: Player, reason: string) {
+    this._storage.ban(player.id);
 
     this._remove(player);
 

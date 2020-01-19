@@ -36,13 +36,13 @@ module.exports = class MockClient extends EventEmitter {
     this.messages = [];
 
     /**
-     * Indicates whether this mock client's connection is currently terminated or not. 
+     * Indicates whether this mock client's connection is currently closed or not. 
      * 
-     * If the mock client's connection is termined, this also contains the reason why.
+     * If the mock client's connection is closed, this also contains the reason why.
      * 
      * @property {Object}
      */
-    this.terminated = { status: false, reason: '' };
+    this.closed = { status: false, code: 0, reason: '' };
   }
 
   /**
@@ -64,11 +64,11 @@ module.exports = class MockClient extends EventEmitter {
   }
 
   /**
-   * Ends this mock client's connection to the game server.
-   * 
-   * @param {string} reason The reason as to why the mock client's connection was terminated.
+   * Closes the mock client's connection to the game server.
+   *
+   * @param {string} reason The reason as to why the mock client's connection was closed.
    */
-  terminate(reason) {
-    this.terminated = { status: true, reason: reason };
+  close(code, reason) {
+    this.closed = { status: true, code: code, reason: reason };
   }
 };

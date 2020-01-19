@@ -78,7 +78,6 @@ export default class Player extends events.EventEmitter {
      * This also emits the `ban` event with the player object, the ban reason, and their id or ip as parameters.
      *
      * @param {string} [reason=''] The reason as to why this player's connection was closed and banned.
-     * @param {boolean} [banIp=false] Indicates whether the player should be ip banned or just profile banned.
      */
-    ban(reason?: string, banIp?: boolean): void;
+    ban(reason?: string): void;
 }

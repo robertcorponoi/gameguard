@@ -17,7 +17,8 @@ module.exports = class GameGuard {
     /**
      * @param {http.Server|https.Server} server The http server instance to bind to.
      * @param {Object} [options]
-     * @param {string} [options.db] The path to where the database file should be saved to.
+     * @param {string} [options.storageMethod='local'] The type of persistent storage to use with GameGuard. The current available options are 'mongodb' or 'local'.
+     * @param {string} [options.localDbPath=process.cwd()/db/gameguard.db] If local storage is chosen, then the path to where the db file should be created can be specified.
      */
     constructor(server, options) {
         /**
@@ -34,7 +35,7 @@ module.exports = class GameGuard {
         this._storage = new Storage_1.default(this._options);
         this._players = new Players_1.default(this._storage);
         this._system = new System_1.default(this._players);
-        this._boot();
+        this._storage.onReady.add(() => this._boot());
     }
     /**
      * Returns a reference to the Players module.
@@ -89,7 +90,13 @@ module.exports = class GameGuard {
         const messageParsed = new Message_1.default(messageObject.type, messageObject.contents);
         switch (messageParsed.type) {
             case 'player-connected':
-                this.players.add(messageParsed.contents, socket, request);
+                this._storage.isBanned(messageParsed.contents)
+                    .then((isBanned) => {
+                    if (isBanned)
+                        this.players.reject(messageParsed.contents, socket, request); // socket.close(4000, 'you are banned fool');
+                    else
+                        this.players.add(messageParsed.contents, socket, request);
+                });
                 break;
         }
     }
