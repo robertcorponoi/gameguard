@@ -3,6 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+require('dotenv').config();
 const Rooms_1 = __importDefault(require("./rooms/Rooms"));
 const System_1 = __importDefault(require("./system/System"));
 const Storage_1 = __importDefault(require("./storage/Storage"));

@@ -17,20 +17,30 @@ const GameGuard = require('../../build/index');
  */
 const server = app.listen(3000, () => console.log('Listening on port 3000'));
 
-const options = { storageMethod: 'mongodb' };
+const options = { dbType: 'mysql' };
 
 /**
  * Start an instance of GameGuard with the express server.
  */
 const gg = new GameGuard(server, options);
 
+setTimeout(() => {
+    gg._storage._getBanned().then((banned) => console.log(banned));
+}, 4000);
+
 /**
  * When a player joins, log it to the console.
  */
 gg.players.on('player-connected', (player) => {
   setTimeout(() => {
-    console.log('banning...');
-    player.ban('wtf');
+    gg._storage.ban(player.id);
+
+    setTimeout(() => {
+      gg._storage._getBanned().then((bannedZ) => console.log(banned));
+    }, 5000);
+    //console.log('banning...');
+    //player.ban('wtf');
+//    gg._storage._getBanned().then((banned) => console.log(banned));
   }, 5000);
   // console.log('PLAYER JOINED', player.id, player._id);
 });

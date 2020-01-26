@@ -1,5 +1,7 @@
 'use strict'
 
+require('dotenv').config();
+
 import Rooms from './rooms/Rooms';
 import System from './system/System';
 import Storage from './storage/Storage';

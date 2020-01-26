@@ -1,3 +1,11 @@
+0.8.0 / 2020-01-25
+==================
+* [FEATURE] Added option to use mysql.
+* [FEATURE] Changed the `database` option to `dbType` for more clarity.
+* [FEATURE] Added option to use a .env file to specify database connection information.
+* [DOCS] Added a .sample.env file to highlight the options available for use in a .env file and their default values.
+* [DOCS] Updated README with lateast information.
+
 0.7.0 / 2020-01-19
 ==================
 * [FEATURE] Matched version with gameguard-client. From this point forward both packages with matching version numbers will be guaranteed to work with each other.
