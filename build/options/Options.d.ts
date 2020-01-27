@@ -3,23 +3,15 @@
  */
 export default class Options {
     /**
-     * The type of persistent storage to use with GameGuard.
+     * The database type to use.
      *
-     * The current available options are 'mongodb' or 'local'.
-     *
-     * @property {string}
-     *
-     * @default 'local'
-     */
-    storageMethod: string;
-    /**
-     * If local storage is chosen, then the path to where the db file should be created can be specified.
+     * Current supported database types are 'mongodb' and 'mysql'.
      *
      * @property {string}
      *
-     * @default `process.cwd()/db/gameguard.db`
+     * @default 'mongodb'
      */
-    localDbPath: string;
+    dbType: string;
     /**
      * @param {Object} options The options passed to GameGuard on initialization.
      */

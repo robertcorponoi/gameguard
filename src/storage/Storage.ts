@@ -1,12 +1,12 @@
 'use strict'
 
-//import Datastore from 'nedb';
+import mysql from 'mysql2/promise';
 import mongoose from 'mongoose';
 import Hypergiant from 'hypergiant';
 
 import Options from '../options/Options';
 
-import BannedPlayers from './schemas/BannedPlayers'; 
+import Player from './schemas/Player'; 
 
 /**
  * The Storage modules handling the storing of persistent server data to an encryped file or database.
@@ -22,7 +22,7 @@ export default class Storage {
   private _options: Options;
 
   /**
-   * A reference to the mongoose connection.
+   * A reference to the mongoose or mysql connection.
    *
    * @private
    *
@@ -37,16 +37,7 @@ export default class Storage {
    *
    * @property {mongoose.Model}
    */
-  private _BannedPlayer: any = mongoose.model('BannedPlayers', BannedPlayers);
-
-  /**
-   * A reference to the nedb datastore.
-   * 
-   * @private
-   * 
-   * @property {Datastore}
-   */
-  //private _db!: Datastore;
+  private _Player: any = mongoose.model('Player', Player);
 
   /**
    * The signal that is dispatched when the database is ready to use.
@@ -62,7 +53,6 @@ export default class Storage {
    */
   constructor(options: Options) {
     this._options = options;
-
     this._setup();
   }
 
@@ -74,13 +64,14 @@ export default class Storage {
   get onReady(): Hypergiant { return this._onReady; }
 
   /**
-   * Sets up the database.
+   * Sets up the mongodb or mysql database.
    * 
    * @async
+   *
    * @private
    */
   private async _setup() {
-    switch (this._options.storageMethod) {
+    switch (this._options.dbType) {
       case 'mongodb':
         this._db = mongoose.connection;
 
@@ -90,37 +81,67 @@ export default class Storage {
           this._onReady.dispatch();
         });
 
-        await mongoose.connect('mongodb://localhost/gameguard', {
+        const mongodbName: string = process.env.MONGODB_NAME || 'gameguard';
+
+        await mongoose.connect(`mongodb://localhost/${mongodbName}`, {
           useNewUrlParser: true,
           useUnifiedTopology: true
         });
 
         break;
-        /*default:
-        // By default, we use the local storage method.
-        this._db = new Datastore({ filename: this._options.localDbPath, autoload: true });
+      case 'mysql':
+        const connectionInfo: any = {
+          host: process.env.MYSQL_HOST || 'localhost',
+          port: process.env.MYSQL_PORT || 3306,
+          user: process.env.MYSQL_USER || 'root',
+          password: process.env.MYSQL_PASS || '',
+          database: process.env.MYSQL_DB || 'gameguard'
+        };
 
-        this._onReady.dispatch();
-        break;*/
+        this._db = await mysql.createConnection(connectionInfo);
+
+        try {
+          await this._db.execute('SELECT 1 FROM players LIMIT 1');
+        } catch (err) {
+          await this._db.query('CREATE TABLE players (id INT(6) AUTO_INCREMENT PRIMARY KEY, pid VARCHAR(36) UNIQUE KEY NOT NULL, banned BOOLEAN DEFAULT FALSE);');
+        }
+
+        this.onReady.dispatch();
+        break;
     }
   }
 
   /**
    * Removes all players from the banned players list.
    *
-   * This is just for testing.
+   * **Note:** This is used for testing only and shouldn't be used anywhere else.
    */
   private async _clearDb() {
-    await this._BannedPlayer.deleteMany({});
+    switch (this._options.dbType) {
+      case 'mongodb':
+        await this._Player.deleteMany({});
+        break;
+      case 'mysql':
+        await this._db.execute('truncate players');
+        break;
+    }
   }
 
   /**
    * Returns all of the players on the banned players list.
    *
-   * This is just for testing.
+   * **Note:** This is used for testing only and shouldn't be used anywhere else.
    */
   private async _getBanned() {
-    return await this._BannedPlayer.find({});
+    switch (this._options.dbType) {
+      case 'mongodb':
+        return await this._Player.find({ banned: true });
+        break;
+      case 'mysql':
+        const [rows, fields] = await this._db.execute('SELECT * FROM `players` WHERE `banned` = ?', [true]);
+        return rows;
+        break;
+    }
   }
 
   /**
@@ -129,16 +150,23 @@ export default class Storage {
    * @param {string} playerId The id of the player to ban.
    */
   ban(playerId: string) {
-    const bannedPlayer = new this._BannedPlayer({ pid: playerId }); 
+    switch (this._options.dbType) {
+      case 'mongodb':
+        const bannedPlayer = new this._Player({ pid: playerId }); 
 
-    this._BannedPlayer.updateOne(
-      { pid: playerId },
-      { $setOnInsert: bannedPlayer },
-      { upsert: true },
-      (err: Error, numAffected: number) => {
-        if (err) return console.error(err);
-      }
-    )
+        this._Player.updateOne(
+          { pid: playerId, banned: true },
+          { $setOnInsert: bannedPlayer },
+          { upsert: true },
+          (err: Error, numAffected: number) => {
+            if (err) return console.error(err);
+          }
+        )
+        break;
+      case 'mysql':
+        this._db.execute('INSERT INTO players (`pid`, `banned`) VALUES (?, true)', [playerId]);
+        break;
+    }
   }
 
   /**
@@ -148,14 +176,25 @@ export default class Storage {
    *
    * @returns {Promise<boolean>} Returns true if the player has been banned or false otherwise.
    */
-  isBanned(playerId: string): Promise<boolean> {
-    return new Promise((resolve, reject) => {
-      this._BannedPlayer.findOne({ pid: playerId }, (err: Error, entry: any) => {
-        if (err) reject(err);
+  async isBanned(playerId: string) {
+    switch (this._options.dbType) {
+      case 'mongodb':
+        return new Promise((resolve, reject) => {
+          this._Player.findOne({ pid: playerId, banned: true  }, (err: Error, entry: any) => {
+            if (err) reject(err);
 
-        if (entry) resolve(true);
-        else resolve(false);
-      });
-    });
+            if (entry) resolve(true);
+            else resolve(false);
+          });
+        });
+        break;
+      case 'mysql':
+        const [rows, fields] = await this._db.execute('SELECT 1 FROM players where `pid` = ? AND `banned` = ? LIMIT 1;', [playerId, true]);
+
+        if (rows.length > 0) return true;
+
+        return false;
+        break;
+    }
   }
 }

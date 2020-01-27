@@ -32,8 +32,7 @@ const ids = [
 const dbPath = path.resolve(process.cwd(), 'tests', 'server', 'gameguard.db');
 
 const options = {
-  storageMethod: 'mongodb',
-  localDbPath: dbPath 
+  dbType: 'mongodb',
 };
 
 /**

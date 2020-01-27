@@ -28,6 +28,7 @@ This is mostly due to pitfalls of local storage options and will not be re-imple
 
 - [Install](#install)
 - [Initialization](#initialization)
+- [Databases](#databases)
 - [Players](#players)
 - [Rooms](#rooms)
 - [System](#system)
@@ -55,9 +56,15 @@ These used to be one package originally but it was harder to maintain and bundle
 
 ## **Initialization**
 
-To initialize GameGuard, you have to initialize it with a reference to a http or https server.
+To initialize GameGuard, you have to initialize it with a reference to a http or https server and an optional set of options.
 
-and example of doing this with my personal favorite, fastify, is as follows:
+| param | type | description | default |
+|-------|------|-------------|---------|
+| server | http.Server | A reference to the http server instance to bind to. | |
+| options | Object | | |
+| options.dbType | string | The type of database to use. Current supported options are 'mongodb' and 'mysql' | 'mysql' |
+
+and example of doing this with my personal favorite http server, fastify, is as follows:
 
 ```js
 'use strict'
@@ -79,6 +86,14 @@ fastify.listen(3000, (err, address) => {
 Notice how we pass fastify's server instance to GameGuard so that GameGuard can use it to communicate with the client.
 
 The [http-server-examples docs](docs/http-server-examples.md) describe how you can use easily use GameGuard with different server frameworks such as fastify, express, and koa.
+
+## **Databases**
+
+Older versions of gameguard would allow you to use a local file as a database. However, that has since been removed (maybe temporairly) as it was causing issues and now you have the option to use mysql or mongodb.
+
+The option for the type of database to use is defined as an initialization option as shown above. For specific connection information such as host, port, user, etc. you must create a `.env` file defining the values.
+
+A good starting point for creating a `.env` file is the `.sample.env` file. This file highlights all of the variables that can be defined in a `.env` file and their default values that are used if none are specified.
 
 ## **Players**
 

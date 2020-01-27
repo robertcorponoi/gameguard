@@ -13,7 +13,7 @@ export default class Storage {
      */
     private _options;
     /**
-     * A reference to the mongoose connection.
+     * A reference to the mongoose or mysql connection.
      *
      * @private
      *
@@ -27,14 +27,7 @@ export default class Storage {
      *
      * @property {mongoose.Model}
      */
-    private _BannedPlayer;
-    /**
-     * A reference to the nedb datastore.
-     *
-     * @private
-     *
-     * @property {Datastore}
-     */
+    private _Player;
     /**
      * The signal that is dispatched when the database is ready to use.
      *
@@ -54,22 +47,23 @@ export default class Storage {
      */
     get onReady(): Hypergiant;
     /**
-     * Sets up the database.
+     * Sets up the mongodb or mysql database.
      *
      * @async
+     *
      * @private
      */
     private _setup;
     /**
      * Removes all players from the banned players list.
      *
-     * This is just for testing.
+     * **Note:** This is used for testing only and shouldn't be used anywhere else.
      */
     private _clearDb;
     /**
      * Returns all of the players on the banned players list.
      *
-     * This is just for testing.
+     * **Note:** This is used for testing only and shouldn't be used anywhere else.
      */
     private _getBanned;
     /**
@@ -85,5 +79,5 @@ export default class Storage {
      *
      * @returns {Promise<boolean>} Returns true if the player has been banned or false otherwise.
      */
-    isBanned(playerId: string): Promise<boolean>;
+    isBanned(playerId: string): Promise<unknown>;
 }

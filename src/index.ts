@@ -1,5 +1,7 @@
 'use strict'
 
+require('dotenv').config();
+
 import Rooms from './rooms/Rooms';
 import System from './system/System';
 import Storage from './storage/Storage';
@@ -161,7 +163,7 @@ module.exports = class GameGuard {
     switch (messageParsed.type) {
       case 'player-connected':
         this._storage.isBanned(messageParsed.contents)
-          .then((isBanned: boolean) => {
+          .then((isBanned) => {
             if (isBanned) this.players.reject(messageParsed.contents, socket, request); // socket.close(4000, 'you are banned fool');
             else this.players.add(messageParsed.contents, socket, request);
           });

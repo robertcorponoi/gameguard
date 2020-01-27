@@ -12,10 +12,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-//import Datastore from 'nedb';
+const promise_1 = __importDefault(require("mysql2/promise"));
 const mongoose_1 = __importDefault(require("mongoose"));
 const hypergiant_1 = __importDefault(require("hypergiant"));
-const BannedPlayers_1 = __importDefault(require("./schemas/BannedPlayers"));
+const Player_1 = __importDefault(require("./schemas/Player"));
 /**
  * The Storage modules handling the storing of persistent server data to an encryped file or database.
  */
@@ -31,15 +31,7 @@ class Storage {
          *
          * @property {mongoose.Model}
          */
-        this._BannedPlayer = mongoose_1.default.model('BannedPlayers', BannedPlayers_1.default);
-        /**
-         * A reference to the nedb datastore.
-         *
-         * @private
-         *
-         * @property {Datastore}
-         */
-        //private _db!: Datastore;
+        this._Player = mongoose_1.default.model('Player', Player_1.default);
         /**
          * The signal that is dispatched when the database is ready to use.
          *
@@ -58,52 +50,80 @@ class Storage {
      */
     get onReady() { return this._onReady; }
     /**
-     * Sets up the database.
+     * Sets up the mongodb or mysql database.
      *
      * @async
+     *
      * @private
      */
     _setup() {
         return __awaiter(this, void 0, void 0, function* () {
-            switch (this._options.storageMethod) {
+            switch (this._options.dbType) {
                 case 'mongodb':
                     this._db = mongoose_1.default.connection;
                     this._db.on('error', console.error.bind(console, 'connection error:'));
                     this._db.once('open', () => __awaiter(this, void 0, void 0, function* () {
                         this._onReady.dispatch();
                     }));
-                    yield mongoose_1.default.connect('mongodb://localhost/gameguard', {
+                    const mongodbName = process.env.MONGODB_NAME || 'gameguard';
+                    yield mongoose_1.default.connect(`mongodb://localhost/${mongodbName}`, {
                         useNewUrlParser: true,
                         useUnifiedTopology: true
                     });
                     break;
-                /*default:
-                // By default, we use the local storage method.
-                this._db = new Datastore({ filename: this._options.localDbPath, autoload: true });
-        
-                this._onReady.dispatch();
-                break;*/
+                case 'mysql':
+                    const connectionInfo = {
+                        host: process.env.MYSQL_HOST || 'localhost',
+                        port: process.env.MYSQL_PORT || 3306,
+                        user: process.env.MYSQL_USER || 'root',
+                        password: process.env.MYSQL_PASS || '',
+                        database: process.env.MYSQL_DB || 'gameguard'
+                    };
+                    this._db = yield promise_1.default.createConnection(connectionInfo);
+                    try {
+                        yield this._db.execute('SELECT 1 FROM players LIMIT 1');
+                    }
+                    catch (err) {
+                        yield this._db.query('CREATE TABLE players (id INT(6) AUTO_INCREMENT PRIMARY KEY, pid VARCHAR(36) UNIQUE KEY NOT NULL, banned BOOLEAN DEFAULT FALSE);');
+                    }
+                    this.onReady.dispatch();
+                    break;
             }
         });
     }
     /**
      * Removes all players from the banned players list.
      *
-     * This is just for testing.
+     * **Note:** This is used for testing only and shouldn't be used anywhere else.
      */
     _clearDb() {
         return __awaiter(this, void 0, void 0, function* () {
-            yield this._BannedPlayer.deleteMany({});
+            switch (this._options.dbType) {
+                case 'mongodb':
+                    yield this._Player.deleteMany({});
+                    break;
+                case 'mysql':
+                    yield this._db.execute('truncate players');
+                    break;
+            }
         });
     }
     /**
      * Returns all of the players on the banned players list.
      *
-     * This is just for testing.
+     * **Note:** This is used for testing only and shouldn't be used anywhere else.
      */
     _getBanned() {
         return __awaiter(this, void 0, void 0, function* () {
-            return yield this._BannedPlayer.find({});
+            switch (this._options.dbType) {
+                case 'mongodb':
+                    return yield this._Player.find({ banned: true });
+                    break;
+                case 'mysql':
+                    const [rows, fields] = yield this._db.execute('SELECT * FROM `players` WHERE `banned` = ?', [true]);
+                    return rows;
+                    break;
+            }
         });
     }
     /**
@@ -112,11 +132,18 @@ class Storage {
      * @param {string} playerId The id of the player to ban.
      */
     ban(playerId) {
-        const bannedPlayer = new this._BannedPlayer({ pid: playerId });
-        this._BannedPlayer.updateOne({ pid: playerId }, { $setOnInsert: bannedPlayer }, { upsert: true }, (err, numAffected) => {
-            if (err)
-                return console.error(err);
-        });
+        switch (this._options.dbType) {
+            case 'mongodb':
+                const bannedPlayer = new this._Player({ pid: playerId });
+                this._Player.updateOne({ pid: playerId, banned: true }, { $setOnInsert: bannedPlayer }, { upsert: true }, (err, numAffected) => {
+                    if (err)
+                        return console.error(err);
+                });
+                break;
+            case 'mysql':
+                this._db.execute('INSERT INTO players (`pid`, `banned`) VALUES (?, true)', [playerId]);
+                break;
+        }
     }
     /**
      * Checks to see if a player id is banned or not.
@@ -126,15 +153,27 @@ class Storage {
      * @returns {Promise<boolean>} Returns true if the player has been banned or false otherwise.
      */
     isBanned(playerId) {
-        return new Promise((resolve, reject) => {
-            this._BannedPlayer.findOne({ pid: playerId }, (err, entry) => {
-                if (err)
-                    reject(err);
-                if (entry)
-                    resolve(true);
-                else
-                    resolve(false);
-            });
+        return __awaiter(this, void 0, void 0, function* () {
+            switch (this._options.dbType) {
+                case 'mongodb':
+                    return new Promise((resolve, reject) => {
+                        this._Player.findOne({ pid: playerId, banned: true }, (err, entry) => {
+                            if (err)
+                                reject(err);
+                            if (entry)
+                                resolve(true);
+                            else
+                                resolve(false);
+                        });
+                    });
+                    break;
+                case 'mysql':
+                    const [rows, fields] = yield this._db.execute('SELECT 1 FROM players where `pid` = ? AND `banned` = ? LIMIT 1;', [playerId, true]);
+                    if (rows.length > 0)
+                        return true;
+                    return false;
+                    break;
+            }
         });
     }
 }
