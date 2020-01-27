@@ -40,7 +40,6 @@ class Players extends events_1.default.EventEmitter {
      * @param {*} request The http request object of the client.
      */
     add(id, socket, request) {
-        console.log('blah');
         const player = new Player_1.default(id, socket, request);
         player.on('kick', (player, reason) => this._onkick(player, reason));
         player.on('ban', (player, reason) => this._onban(player, reason));
