@@ -153,15 +153,27 @@ class Storage {
      * @returns {Promise<boolean>} Returns true if the player has been banned or false otherwise.
      */
     isBanned(playerId) {
-        return new Promise((resolve, reject) => {
-            this._Player.findOne({ pid: playerId, status: 'banned' }, (err, entry) => {
-                if (err)
-                    reject(err);
-                if (entry)
-                    resolve(true);
-                else
-                    resolve(false);
-            });
+        return __awaiter(this, void 0, void 0, function* () {
+            switch (this._options.dbType) {
+                case 'mongodb':
+                    return new Promise((resolve, reject) => {
+                        this._Player.findOne({ pid: playerId, banned: true }, (err, entry) => {
+                            if (err)
+                                reject(err);
+                            if (entry)
+                                resolve(true);
+                            else
+                                resolve(false);
+                        });
+                    });
+                    break;
+                case 'mysql':
+                    const [rows, fields] = yield this._db.execute('SELECT 1 FROM players where `pid` = ? AND `banned` = ? LIMIT 1;', [playerId, true]);
+                    if (rows.length > 0)
+                        return true;
+                    return false;
+                    break;
+            }
         });
     }
 }

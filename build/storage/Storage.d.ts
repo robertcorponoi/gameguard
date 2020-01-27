@@ -79,5 +79,5 @@ export default class Storage {
      *
      * @returns {Promise<boolean>} Returns true if the player has been banned or false otherwise.
      */
-    isBanned(playerId: string): Promise<boolean>;
+    isBanned(playerId: string): Promise<unknown>;
 }

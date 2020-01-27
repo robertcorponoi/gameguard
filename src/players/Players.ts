@@ -53,6 +53,7 @@ export default class Players extends events.EventEmitter {
    * @param {*} request The http request object of the client.
    */
   add(id: string, socket: any, request: any) {
+    console.log('blah');
     const player: Player = new Player(id, socket, request);
 
     player.on('kick', (player: Player, reason: string) => this._onkick(player, reason));
