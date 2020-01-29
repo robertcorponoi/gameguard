@@ -1,11 +1,10 @@
-/// <reference types="node" />
-import events from 'events';
+import Hypergiant from 'hypergiant';
 import Player from './Player';
 import Storage from '../storage/Storage';
 /**
  * The Players module handles managing players as a batch group.
  */
-export default class Players extends events.EventEmitter {
+export default class Players {
     /**
      * A reference to the Storage module.
      *
@@ -23,6 +22,56 @@ export default class Players extends events.EventEmitter {
      */
     private _connected;
     /**
+     * The signal that is dispatched when a player connects to the server.
+     *
+     * The data contained in this signal is: the player object.
+     *
+     * @private
+     *
+     * @property {Hypergiant}
+     */
+    private _playerConnected;
+    /**
+     * The signal that is dispatched when a player disconnects from the server.
+     *
+     * The data contained in this signal is: the player object.
+     *
+     * @private
+     *
+     * @property {Hypergiant}
+     */
+    private _playerDisconnected;
+    /**
+     * The signal that is dispatched when a player is rejected by the server due to them being banned.
+     *
+     * The data contained in this signal is: the id of the player that was rejected.
+     *
+     * @private
+     *
+     * @property {Hypergiant}
+     */
+    private _playerRejected;
+    /**
+     * The signal that is dispatched when a player is kicked from the server.
+     *
+     * The data contained in this signal is: the player object and the reason for the kick.
+     *
+     * @private
+     *
+     * @property {Hypergiant}
+     */
+    private _playerKicked;
+    /**
+     * The signal that is dispatched when a player is banned from the server.
+     *
+     * The data contained in this signal is: the player object and the reason for the ban.
+     *
+     * @private
+     *
+     * @property {Hypergiant}
+     */
+    private _playerBanned;
+    /**
      * @param {Storage} storage A reference to the Storage module.
      */
     constructor(storage: Storage);
@@ -32,6 +81,36 @@ export default class Players extends events.EventEmitter {
      * @returns {Array<Player>}
      */
     get connected(): Array<Player>;
+    /**
+     * Returns the player connected signal.
+     *
+     * @returns {Hypergiant}
+     */
+    get playerConnected(): Hypergiant;
+    /**
+     * Returns the player disconnected signal.
+     *
+     * @returns {Hypergiant}
+     */
+    get playerDisconnected(): Hypergiant;
+    /**
+     * Returns the player rejected signal.
+     *
+     * @returns {Hypergiant}
+     */
+    get playerRejected(): Hypergiant;
+    /**
+     * Returns the player kicked signal.
+     *
+     * @returns {Hypergiant}
+     */
+    get playerKicked(): Hypergiant;
+    /**
+     * Returns the player banned signal.
+     *
+     * @returns {Hypergiant}
+     */
+    get playerBanned(): Hypergiant;
     /**
      * Adds a player to the list of connected players.
      *
@@ -50,6 +129,10 @@ export default class Players extends events.EventEmitter {
      * @param {*} request The http request object of the client.
      */
     reject(id: string, socket: any, request: any): void;
+    /**
+     * Remove all listeners from all signals.
+     */
+    removeAllListeners(): void;
     /**
      * Removes a player from the list of connected players.
      *

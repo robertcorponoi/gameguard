@@ -3,17 +3,16 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const events_1 = __importDefault(require("events"));
+const hypergiant_1 = __importDefault(require("hypergiant"));
 const Player_1 = __importDefault(require("./Player"));
 /**
  * The Players module handles managing players as a batch group.
  */
-class Players extends events_1.default.EventEmitter {
+class Players {
     /**
      * @param {Storage} storage A reference to the Storage module.
      */
     constructor(storage) {
-        super();
         /**
          * A reference to all of the players that are connected to the server.
          *
@@ -22,6 +21,56 @@ class Players extends events_1.default.EventEmitter {
          * @property {Array<Player>}
          */
         this._connected = [];
+        /**
+         * The signal that is dispatched when a player connects to the server.
+         *
+         * The data contained in this signal is: the player object.
+         *
+         * @private
+         *
+         * @property {Hypergiant}
+         */
+        this._playerConnected = new hypergiant_1.default();
+        /**
+         * The signal that is dispatched when a player disconnects from the server.
+         *
+         * The data contained in this signal is: the player object.
+         *
+         * @private
+         *
+         * @property {Hypergiant}
+         */
+        this._playerDisconnected = new hypergiant_1.default();
+        /**
+         * The signal that is dispatched when a player is rejected by the server due to them being banned.
+         *
+         * The data contained in this signal is: the id of the player that was rejected.
+         *
+         * @private
+         *
+         * @property {Hypergiant}
+         */
+        this._playerRejected = new hypergiant_1.default();
+        /**
+         * The signal that is dispatched when a player is kicked from the server.
+         *
+         * The data contained in this signal is: the player object and the reason for the kick.
+         *
+         * @private
+         *
+         * @property {Hypergiant}
+         */
+        this._playerKicked = new hypergiant_1.default();
+        /**
+         * The signal that is dispatched when a player is banned from the server.
+         *
+         * The data contained in this signal is: the player object and the reason for the ban.
+         *
+         * @private
+         *
+         * @property {Hypergiant}
+         */
+        this._playerBanned = new hypergiant_1.default();
         this._storage = storage;
     }
     /**
@@ -30,6 +79,36 @@ class Players extends events_1.default.EventEmitter {
      * @returns {Array<Player>}
      */
     get connected() { return this._connected; }
+    /**
+     * Returns the player connected signal.
+     *
+     * @returns {Hypergiant}
+     */
+    get playerConnected() { return this._playerConnected; }
+    /**
+     * Returns the player disconnected signal.
+     *
+     * @returns {Hypergiant}
+     */
+    get playerDisconnected() { return this._playerDisconnected; }
+    /**
+     * Returns the player rejected signal.
+     *
+     * @returns {Hypergiant}
+     */
+    get playerRejected() { return this._playerRejected; }
+    /**
+     * Returns the player kicked signal.
+     *
+     * @returns {Hypergiant}
+     */
+    get playerKicked() { return this._playerKicked; }
+    /**
+     * Returns the player banned signal.
+     *
+     * @returns {Hypergiant}
+     */
+    get playerBanned() { return this._playerBanned; }
     /**
      * Adds a player to the list of connected players.
      *
@@ -41,10 +120,10 @@ class Players extends events_1.default.EventEmitter {
      */
     add(id, socket, request) {
         const player = new Player_1.default(id, socket, request);
-        player.on('kick', (player, reason) => this._onkick(player, reason));
-        player.on('ban', (player, reason) => this._onban(player, reason));
+        player.kicked.add((player, reason) => this._onkick(player, reason));
+        player.banned.add((player, reason) => this._onban(player, reason));
         this._connected.push(player);
-        this.emit('player-connected', player);
+        this.playerConnected.dispatch(player);
     }
     /**
      * Automatically rejects a player when banned player attempst to connect.
@@ -55,7 +134,17 @@ class Players extends events_1.default.EventEmitter {
      */
     reject(id, socket, request) {
         socket.close(4000, 'youre banned fool');
-        this.emit('player-rejected', id);
+        this.playerRejected.dispatch(id);
+    }
+    /**
+     * Remove all listeners from all signals.
+     */
+    removeAllListeners() {
+        this.playerConnected.removeAll();
+        this.playerDisconnected.removeAll();
+        this.playerRejected.removeAll();
+        this.playerKicked.removeAll();
+        this.playerBanned.removeAll();
     }
     /**
      * Removes a player from the list of connected players.
@@ -68,7 +157,7 @@ class Players extends events_1.default.EventEmitter {
      */
     _remove(player) {
         this._connected = this._connected.filter((pl) => pl.id !== player.id);
-        this.emit('player-disconnected', player);
+        this.playerDisconnected.dispatch(player);
     }
     /**
      * When a player is kicked, they are removed from the list of connected players.
@@ -82,7 +171,7 @@ class Players extends events_1.default.EventEmitter {
      */
     _onkick(player, reason) {
         this._remove(player);
-        this.emit('player-kicked', player, reason);
+        this.playerKicked.dispatch(player, reason);
     }
     /**
      * When a player is banned, they are removed from the list of connected players and added to a persistent banned players list.
@@ -97,7 +186,7 @@ class Players extends events_1.default.EventEmitter {
     _onban(player, reason) {
         this._storage.ban(player.id);
         this._remove(player);
-        this.emit('player-banned', player, reason);
+        this.playerBanned.dispatch(player, reason);
     }
 }
 exports.default = Players;

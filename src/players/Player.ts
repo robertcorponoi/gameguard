@@ -1,7 +1,6 @@
 'use strict'
 
-import events from 'events';
-
+import Hypergiant from 'hypergiant';
 import Message from '../message/Message';
 
 /**
@@ -9,7 +8,7 @@ import Message from '../message/Message';
  * 
  * The player is created after the client has established an id for them.
  */
-export default class Player extends events.EventEmitter {
+export default class Player {
   /**
    * The id of assigned to this player by the client.
    * 
@@ -47,13 +46,29 @@ export default class Player extends events.EventEmitter {
   private _ip: string;
 
   /**
+   * The signal that is dispatched when this player is kicked.
+   *
+   * @private
+   *
+   * @property {Hypergiant}
+   */
+  private _kicked: Hypergiant = new Hypergiant();
+
+  /**
+   * The signal that is dispatched when this player is banned.
+   *
+   * @private
+   *
+   * @property {Hypergiant}
+   */
+  private _banned: Hypergiant = new Hypergiant();
+
+  /**
    * @param {string} id The id assigned to this player by the client.
    * @param {*} socket A reference to the WebSocket connection object for this player.
    * @param {*} request A reference to the http request object for this player.
    */
   constructor(id: string, socket: any, request: any) {
-    super();
-
     this._id = id;
 
     this._socket = socket;
@@ -76,6 +91,20 @@ export default class Player extends events.EventEmitter {
    * @returns {string}
    */
   get ip(): string { return this._ip; }
+
+  /**
+   * Returns the onKick signal.
+   *
+   * @returns {Hypergiant}
+   */
+  get kicked(): Hypergiant { return this._kicked; }
+
+  /**
+   * Returns the onBan signal.
+   *
+   * @returns {Hypergiant}
+   */
+  get banned(): Hypergiant { return this._banned; }
 
   /**
    * Sends a message to this Player.
@@ -101,7 +130,7 @@ export default class Player extends events.EventEmitter {
   kick(reason: string = '') {
     this._socket.close(4000, reason);
 
-    this.emit('kick', this, reason);
+    this.kicked.dispatch(this, reason);
   }
 
   /**
@@ -114,8 +143,7 @@ export default class Player extends events.EventEmitter {
    */
   ban(reason: string = '') {
     this._socket.close(4000, reason);
-    // this._socket.terminate(reason);
 
-    this.emit('ban', this, reason);
+    this.banned.dispatch(this, reason);
   }
 }

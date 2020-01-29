@@ -1,3 +1,10 @@
+0.9.0 / 2020-01-27
+==================
+* [FEATURE] Changed from using events to signals.
+* [DOCS] Updated documentation for signals.
+* [MISC] Updated tests.
+* [MISC] Updated dependencies to their latest versions.
+
 0.8.0 / 2020-01-25
 ==================
 * [FEATURE] Added option to use mysql.
