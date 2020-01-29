@@ -3,14 +3,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const events_1 = __importDefault(require("events"));
+const hypergiant_1 = __importDefault(require("hypergiant"));
 const Room_1 = __importDefault(require("./Room"));
 /**
  * The Rooms module handles managing rooms as a batch group.
  */
-class Rooms extends events_1.default.EventEmitter {
+class Rooms {
     constructor() {
-        super();
         /**
          * A reference to the rooms that have been created.
          *
@@ -19,6 +18,26 @@ class Rooms extends events_1.default.EventEmitter {
          * @property {Array<Room>}
          */
         this._created = [];
+        /**
+         * The signal that is dispatched when a room is created.
+         *
+         * The data contained in the signal is: the room object.
+         *
+         * @private
+         *
+         * @property {Hypergiant}
+         */
+        this._roomCreated = new hypergiant_1.default();
+        /**
+         * The signal that is dispatched when a room is destroyed.
+         *
+         * The data contained in the signal is: the name of the room that was destroyed.
+         *
+         * @private
+         *
+         * @property {Hypergiant}
+         */
+        this._roomDestroyed = new hypergiant_1.default();
     }
     /**
      * Returns the rooms that have been created.
@@ -26,6 +45,18 @@ class Rooms extends events_1.default.EventEmitter {
      * @returns {Array<Room>}
      */
     get created() { return this._created; }
+    /**
+     * Returns the room created signal.
+     *
+     * @returns {Hypergiant}
+     */
+    get roomCreated() { return this._roomCreated; }
+    /**
+     * Returns the room destroyed signal.
+     *
+     * @returns {Hypergiant}
+     */
+    get roomDestroyed() { return this._roomDestroyed; }
     /**
      * Creates a new room and adds it to the list of rooms that have been created.
      *
@@ -43,7 +74,7 @@ class Rooms extends events_1.default.EventEmitter {
         });
         const room = new Room_1.default(name, capacity);
         this._created.push(room);
-        this.emit('room-created', room);
+        this.roomCreated.dispatch(room);
         return room;
     }
     /**
@@ -55,7 +86,14 @@ class Rooms extends events_1.default.EventEmitter {
      */
     destroy(name) {
         this._created = this.created.filter((room) => room.name !== name);
-        this.emit('room-destroyed', name);
+        this.roomDestroyed.dispatch(name);
+    }
+    /**
+     * Removes all listeners attached to any signals.
+     */
+    removeAllListeners() {
+        this.roomCreated.removeAll();
+        this.roomDestroyed.removeAll();
     }
 }
 exports.default = Rooms;

@@ -1,11 +1,11 @@
 # Players
 
-When a player connects to the server, the client sends over the player's id and a new Player Object is created for the player. The player is then available to be interacted with through the `player-joined` event emitted by the players module.
+When a player connects to the server, the client sends over the player's id and a new Player Object is created for the player. The player is then available to be interacted with through the `playerConnected` signal dispatched by the players module.
 
 Table of Contents
 
 - [Properties](#properties)
-- [Events](#events)
+- [Signals](#signals)
 - [API](#api)
 
 ## **Properties**
@@ -26,46 +26,60 @@ This is the most probably ip for the player. The IP is retrieved from either the
 const ip = player.ip;
 ```
 
-## **Events**
+## **Signals**
 
-Since there is no exact timing with WebSockets, we rely on events to know when things have occurred. After getting the Player Object from the event you can use any method from the API section defined below on them. Each player has the following events that can be responded to:
+Since there is no exact timing with WebSockets, we rely on signals to know when things have occurred. After getting the Player Object from the signal you can use any method from the API section defined below on them. 
 
-### **player-connected**
+If you're new to signals check out [hypergiant](https://github.com/robertcorponoi/hypergiant) to see the signals that gameguard is using.
 
-This is emitted when the player has joined and their Player Object has been created by the server. Along with the event, the player's Player Object is also sent over.
+Each player has the following signals that can be responded to:
+
+### **playerConnected**
+
+This is dispatched when the player has joined and their Player Object has been created by the server. This signal is dispatched with the client's player object. 
 
 ```js
-gameguard.players.on('player-connected', (player) => {
+gameguard.players.playerConnected.add(player => {
   console.log(player);
 });
 ```
 
-### **player-disconnected**
+### **playerDisconnected**
 
-This is emitted when the player has left the server through either being disconnected, kicked, or banned. This event also sends over the Player Object.
+This is dispatched when the player has left the server through either being disconnected, kicked, or banned. This signal is dispatched with the client's player object. 
 
 ```js
-gameguard.players.on('player-disconnected', (player) => {
+gameguard.players.playerDisconnected.add(player => {
   console.log(player);
 });
 ```
 
-### **player-kicked**
+### **playerRejected**
 
-This is emitted when the player has been kicked from the server. This event sends over the Player Object and the reason as to why they were kicked.
+This is dispatched when the player attempts to connect to the server but is kicked because they are banned. This signal is dispatched with the id of the player that was rejected.
 
 ```js
-gameguard.players.on('player-kicked', (player, reason) => {
+gameguard.players.playerRejected.add(playerId => {
+  console.log(playerId);
+});
+```
+
+### **playerKicked**
+
+This is dispatched when the player has been kicked from the server. This signal is dispatched with the client's player object and the reason as to why they were kicked.
+
+```js
+gameguard.players.playerKicked.add((player, reason) => {
   console.log(player, reason);
 });
 ```
 
-### **player-banned**
+### **playerBanned**
 
-This is emitted when the player has been banned from the server. This event sends over the Player Object and the reason that they were banned.
+This is dispatched when the player has been banned from the server. This signal is dispatched with the client's player object and the reason that they were banned.
 
 ```js
-gameguard.players.on('player-banned', (player, reason) => {
+gameguard.players.playerBanned.add((player, reason) => {
   console.log(player, reason);
 });
 ```
@@ -82,7 +96,7 @@ Sends a message to just this player.
 | contents 	| string 	| The conents of the message to send to this player.                                        	|         	|
 
 ```js
-gameguard.players.on('player-connected', (player) => player.message('info', 'Hello there!'));
+gameguard.players.playerConnected.add(player => player.message('info', 'Hello there!'));
 ```
 
 ### **kick**
@@ -94,7 +108,7 @@ Kick a player from the server. This ends their connection to the game server but
 | reason 	| string 	| The reason as to why this player was kicked from the server. This reason is sent to the client and from there you can use it to inform the player. 	|         	|
 
 ```js
-gameguard.players.on('player-connected', (player) => player.kick('cheating'));
+gameguard.players.playerConnected.add(player => player.kick('cheating'));
 ```
 
 ### **ban**
@@ -107,5 +121,5 @@ Bans the player from the server. This ends their connection to the game server a
 | useIP  	| boolean 	| Indicates whether the Player's IP should be banned instead of just their individual id.                                                            	|         	|
 
 ```js
-gameguard.players.on('player-connected', (player) => player.ban('cheating'));
+gameguard.players.playerConnected.add(player => player.ban('cheating'));
 ```

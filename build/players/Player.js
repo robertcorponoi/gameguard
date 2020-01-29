@@ -3,21 +3,36 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const events_1 = __importDefault(require("events"));
+const hypergiant_1 = __importDefault(require("hypergiant"));
 const Message_1 = __importDefault(require("../message/Message"));
 /**
  * A Player represents a client that has established a successful connection to GameGuard.
  *
  * The player is created after the client has established an id for them.
  */
-class Player extends events_1.default.EventEmitter {
+class Player {
     /**
      * @param {string} id The id assigned to this player by the client.
      * @param {*} socket A reference to the WebSocket connection object for this player.
      * @param {*} request A reference to the http request object for this player.
      */
     constructor(id, socket, request) {
-        super();
+        /**
+         * The signal that is dispatched when this player is kicked.
+         *
+         * @private
+         *
+         * @property {Hypergiant}
+         */
+        this._kicked = new hypergiant_1.default();
+        /**
+         * The signal that is dispatched when this player is banned.
+         *
+         * @private
+         *
+         * @property {Hypergiant}
+         */
+        this._banned = new hypergiant_1.default();
         this._id = id;
         this._socket = socket;
         this._request = request;
@@ -35,6 +50,18 @@ class Player extends events_1.default.EventEmitter {
      * @returns {string}
      */
     get ip() { return this._ip; }
+    /**
+     * Returns the onKick signal.
+     *
+     * @returns {Hypergiant}
+     */
+    get kicked() { return this._kicked; }
+    /**
+     * Returns the onBan signal.
+     *
+     * @returns {Hypergiant}
+     */
+    get banned() { return this._banned; }
     /**
      * Sends a message to this Player.
      *
@@ -55,7 +82,7 @@ class Player extends events_1.default.EventEmitter {
      */
     kick(reason = '') {
         this._socket.close(4000, reason);
-        this.emit('kick', this, reason);
+        this.kicked.dispatch(this, reason);
     }
     /**
      * Closes this player's connection to the server and adds them on a banned player list so that they cannot connect
@@ -67,8 +94,7 @@ class Player extends events_1.default.EventEmitter {
      */
     ban(reason = '') {
         this._socket.close(4000, reason);
-        // this._socket.terminate(reason);
-        this.emit('ban', this, reason);
+        this.banned.dispatch(this, reason);
     }
 }
 exports.default = Player;

@@ -104,7 +104,7 @@ describe('Players', () => {
     it('should emit and event when the player object is created', done => {
       const spy = sinon.spy();
 
-      gameGuard.players.on('player-connected', spy);
+      gameGuard.players.playerConnected.add(spy);
 
       addMockClients(1);
 
@@ -120,7 +120,7 @@ describe('Players', () => {
 
   describe('Messaging players', () => {
     it('should send a message to a player', done => {
-      gameGuard.players.on('player-connected', player => {
+      gameGuard.players.playerConnected.add((player) => {
 
         player.message('info', 'hello there!');
 
@@ -141,7 +141,7 @@ describe('Players', () => {
 
       let players = [];
 
-      gameGuard.players.on('player-connected', player => {
+      gameGuard.players.playerConnected.add(player => {
         players.push(player);
 
         player.message('debug', 'x: 5');
@@ -165,9 +165,9 @@ describe('Players', () => {
     it('should kick a player', done => {
       const spy = sinon.spy();
 
-      gameGuard.players.on('player-kicked', spy);
+      gameGuard.players.playerKicked.add(spy);
 
-      gameGuard.players.on('player-connected', player => player.kick('for testing'));
+      gameGuard.players.playerConnected.add(player => player.kick('for testing'));
 
       addMockClients(1);
 
@@ -183,9 +183,9 @@ describe('Players', () => {
     it('should kick a player with a reason', done => {
       const spy = sinon.spy();
 
-      gameGuard.players.on('player-kicked', spy);
+      gameGuard.players.playerKicked.add(spy);
 
-      gameGuard.players.on('player-connected', player => player.kick('for testing'));
+      gameGuard.players.playerConnected.add(player => player.kick('for testing'));
 
       addMockClients(1);
 
@@ -201,9 +201,9 @@ describe('Players', () => {
     it('should ban a player', done => {
       const spy = sinon.spy();
 
-      gameGuard.players.on('player-banned', spy);
+      gameGuard.players.playerBanned.add(spy);
 
-      gameGuard.players.on('player-connected', player => player.ban('for testing'));
+      gameGuard.players.playerConnected.add(player => player.ban('for testing'));
 
       addMockClients(1);
 
@@ -219,9 +219,9 @@ describe('Players', () => {
     it('should ban a player with a reason', done => {
       const spy = sinon.spy();
 
-      gameGuard.players.on('player-banned', spy);
+      gameGuard.players.playerBanned.add(spy);
 
-      gameGuard.players.on('player-connected', player => player.ban('for testing'));
+      gameGuard.players.playerConnected.add(player => player.ban('for testing'));
 
       addMockClients(1);
 
@@ -242,9 +242,9 @@ describe('Players', () => {
       let playerId;
       let playersConnected = 0;
 
-      gameGuard.players.on('player-rejected', spy);
+      gameGuard.players.playerRejected.add(spy);
 
-      gameGuard.players.on('player-connected', player => {
+      gameGuard.players.playerConnected.add(player => {
         playerId = player.id;
 
         if (playersConnected < 1) player.ban('for testing');
@@ -270,7 +270,7 @@ describe('Players', () => {
 
       let id;
 
-      gameGuard.players.on('player-connected', player => {
+      gameGuard.players.playerConnected.add(player => {
         id = player.id;
 
         player.ban('for testing');
@@ -318,7 +318,7 @@ describe('Rooms', () => {
 
       const spy = sinon.spy();
 
-      gameGuard.rooms.on('room-created', spy);
+      gameGuard.rooms.roomCreated.add(spy);
 
       gameGuard.rooms.create('room1', 10);
 
@@ -334,7 +334,7 @@ describe('Rooms', () => {
 
       const spy = sinon.spy();
 
-      gameGuard.rooms.on('room-created', spy);
+      gameGuard.rooms.roomCreated.add(spy);
 
       gameGuard.rooms.create('room1', 10);
 
@@ -373,7 +373,7 @@ describe('Rooms', () => {
 
       const spy = sinon.spy();
 
-      gameGuard.rooms.on('room-destroyed', spy);
+      gameGuard.rooms.roomCreated.add(spy);
 
       gameGuard.rooms.create('room1', 10);
 
@@ -391,7 +391,7 @@ describe('Rooms', () => {
 
       const spy = sinon.spy();
 
-      gameGuard.rooms.on('room-destroyed', spy);
+      gameGuard.rooms.roomDestroyed.add(spy);
 
       gameGuard.rooms.create('room1', 10);
 
@@ -409,7 +409,7 @@ describe('Rooms', () => {
     it('should add a player to a room', done => {
       const room1 = gameGuard.rooms.create('room1');
 
-      gameGuard.players.on('player-connected', player => room1.add(player));
+      gameGuard.players.playerConnected.add(player => room1.add(player));
 
       addMockClients();
 
@@ -427,7 +427,7 @@ describe('Rooms', () => {
 
       const room1 = gameGuard.rooms.create('room1');
 
-      gameGuard.players.on('player-connected', player => {
+      gameGuard.players.playerConnected.add(player => {
         room1.add(player);
 
         players.push(player);
@@ -449,7 +449,7 @@ describe('Rooms', () => {
 
       const room1 = gameGuard.rooms.create('room1');
 
-      gameGuard.players.on('player-connected', player => room1.add(player));
+      gameGuard.players.playerConnected.add(player => room1.add(player));
 
       addMockClients(2);
 
@@ -473,7 +473,7 @@ describe('Rooms', () => {
 
       const broadcastRoom = gameGuard.rooms.create('broadcastRoom');
 
-      gameGuard.players.on('player-connected', player => {
+      gameGuard.players.playerConnected.add(player => {
         players.push(player);
 
         broadcastRoom.add(player);

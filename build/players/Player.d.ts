@@ -1,11 +1,10 @@
-/// <reference types="node" />
-import events from 'events';
+import Hypergiant from 'hypergiant';
 /**
  * A Player represents a client that has established a successful connection to GameGuard.
  *
  * The player is created after the client has established an id for them.
  */
-export default class Player extends events.EventEmitter {
+export default class Player {
     /**
      * The id of assigned to this player by the client.
      *
@@ -39,6 +38,22 @@ export default class Player extends events.EventEmitter {
      */
     private _ip;
     /**
+     * The signal that is dispatched when this player is kicked.
+     *
+     * @private
+     *
+     * @property {Hypergiant}
+     */
+    private _kicked;
+    /**
+     * The signal that is dispatched when this player is banned.
+     *
+     * @private
+     *
+     * @property {Hypergiant}
+     */
+    private _banned;
+    /**
      * @param {string} id The id assigned to this player by the client.
      * @param {*} socket A reference to the WebSocket connection object for this player.
      * @param {*} request A reference to the http request object for this player.
@@ -56,6 +71,18 @@ export default class Player extends events.EventEmitter {
      * @returns {string}
      */
     get ip(): string;
+    /**
+     * Returns the onKick signal.
+     *
+     * @returns {Hypergiant}
+     */
+    get kicked(): Hypergiant;
+    /**
+     * Returns the onBan signal.
+     *
+     * @returns {Hypergiant}
+     */
+    get banned(): Hypergiant;
     /**
      * Sends a message to this Player.
      *

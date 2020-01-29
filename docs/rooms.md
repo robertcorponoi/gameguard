@@ -1,12 +1,13 @@
 # Rooms
 
-Rooms can be used to group players together based on your game's needs. When players are in a room you can manage them together and broadcast messages to every player in the room. After you create a room it can be interacted with directly, unlike players which rely on events.
+Rooms can be used to group players together based on your game's needs. When players are in a room you can manage them together and broadcast messages to every player in the room. After you create a room it can be interacted with directly, unlike players which rely on signals.
 
 The rooms module can be accessed by `gameguard.rooms`.
 
 Table of Contents
 
 - [Properties](#properties)
+- [Signals](#signals)
 - [API](#api)
 
 ## **Properties**
@@ -17,6 +18,32 @@ This getter returns all of the rooms that have been created.
 
 ```js
 const rooms = gameguard.rooms.created;
+```
+
+## **Signals**
+
+The rooms module dispatches signals when rooms are created or destroyed.
+
+If you are new to signals, check out [hypergiant](https://github.com/robertcorponoi/hypergiant) to see the signals that gameguard is using.
+
+### **roomCreated**
+
+Dispatched when a room is created with the room object.
+
+```js
+gameguard.rooms.roomCreated.add(room => {
+  console.log(room);
+});
+```
+
+### **roomDestroyed**
+
+Dispatched when a room is destroyed with the name of the room that was destroyed..
+
+```js
+gameguard.rooms.roomDestroyed.add(roomName => {
+  console.log(roomName);
+});
 ```
 
 ## **API**

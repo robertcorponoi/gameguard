@@ -99,21 +99,21 @@ A good starting point for creating a `.env` file is the `.sample.env` file. This
 
 At it's core, GameGuard works around taking clients and turning them into players.
 
-To see all of the properties, events, and methods available to use with players, check out the [player documentation](docs/players.md).
+To see all of the properties, signals, and methods available to use with players, check out the [player documentation](docs/players.md).
 
 ## **Rooms**
 
 Rooms can be used to group players together so that you can more easily manage them and broadcast messages to all players in a room.
 
-To see the properties, events, and methods available to use with the Rooms modules such as creating or destroying rooms, check out the [rooms documentation](docs/rooms.md).
+To see the properties, signals, and methods available to use with the Rooms modules such as creating or destroying rooms, check out the [rooms documentation](docs/rooms.md).
 
-Once you create a room, you can use all of the properties and methods available for individual rooms on that create room. To see all of the properties, events, and methods available to use on any room created through the Rooms module, check out the [room documentation](docs/room.md).
+Once you create a room, you can use all of the properties and methods available for individual rooms on that create room. To see all of the properties, signals, and methods available to use on any room created through the Rooms module, check out the [room documentation](docs/room.md).
 
 ## **System**
 
 System is used to perform actions that affect every player in the server, regardless of the room they are in.
 
-To see all of the properties, events, and methods available to use with the system, check out the [system documentation](docs/system.md).
+To see all of the properties, signals, and methods available to use with the system, check out the [system documentation](docs/system.md).
 
 ## **Tests**
 

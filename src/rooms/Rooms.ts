@@ -1,13 +1,13 @@
 'use strict'
 
-import events from 'events';
+import Hypergiant from 'hypergiant';
 
 import Room from './Room';
 
 /**
  * The Rooms module handles managing rooms as a batch group.
  */
-export default class Rooms extends events.EventEmitter {
+export default class Rooms {
   /**
    * A reference to the rooms that have been created.
    * 
@@ -17,7 +17,27 @@ export default class Rooms extends events.EventEmitter {
    */
   private _created: Array<Room> = [];
 
-  constructor() { super(); }
+  /**
+   * The signal that is dispatched when a room is created.
+   *
+   * The data contained in the signal is: the room object.
+   *
+   * @private
+   *
+   * @property {Hypergiant}
+   */
+  private _roomCreated: Hypergiant = new Hypergiant();
+  
+  /**
+   * The signal that is dispatched when a room is destroyed.
+   *
+   * The data contained in the signal is: the name of the room that was destroyed.
+   *
+   * @private
+   *
+   * @property {Hypergiant}
+   */
+  private _roomDestroyed: Hypergiant = new Hypergiant();
 
   /**
    * Returns the rooms that have been created.
@@ -25,6 +45,20 @@ export default class Rooms extends events.EventEmitter {
    * @returns {Array<Room>}
    */
   get created(): Array<Room> { return this._created; }
+
+  /**
+   * Returns the room created signal.
+   *
+   * @returns {Hypergiant}
+   */
+  get roomCreated(): Hypergiant { return this._roomCreated; }
+  
+  /**
+   * Returns the room destroyed signal.
+   *
+   * @returns {Hypergiant}
+   */
+  get roomDestroyed(): Hypergiant { return this._roomDestroyed; }
 
   /**
    * Creates a new room and adds it to the list of rooms that have been created.
@@ -45,7 +79,7 @@ export default class Rooms extends events.EventEmitter {
 
     this._created.push(room);
 
-    this.emit('room-created', room);
+    this.roomCreated.dispatch(room);
 
     return room;
   }
@@ -60,6 +94,14 @@ export default class Rooms extends events.EventEmitter {
   destroy(name: string) {
     this._created = this.created.filter((room: Room) => room.name !== name);
 
-    this.emit('room-destroyed', name);
+    this.roomDestroyed.dispatch(name);
+  }
+
+  /**
+   * Removes all listeners attached to any signals.
+   */
+  removeAllListeners() {
+    this.roomCreated.removeAll();
+    this.roomDestroyed.removeAll();
   }
 }

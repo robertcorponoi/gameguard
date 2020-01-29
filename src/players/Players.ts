@@ -1,6 +1,6 @@
 'use strict'
 
-import events from 'events';
+import Hypergiant from 'hypergiant';
 
 import Player from './Player';
 import Storage from '../storage/Storage';
@@ -8,7 +8,7 @@ import Storage from '../storage/Storage';
 /**
  * The Players module handles managing players as a batch group.
  */
-export default class Players extends events.EventEmitter {
+export default class Players {
   /**
    * A reference to the Storage module.
    * 
@@ -28,11 +28,64 @@ export default class Players extends events.EventEmitter {
   private _connected: Array<Player> = [];
 
   /**
+   * The signal that is dispatched when a player connects to the server.
+   *
+   * The data contained in this signal is: the player object.
+   *
+   * @private
+   *
+   * @property {Hypergiant}
+   */
+  private _playerConnected: Hypergiant = new Hypergiant();
+
+  /**
+   * The signal that is dispatched when a player disconnects from the server.
+   *
+   * The data contained in this signal is: the player object.
+   *
+   * @private
+   *
+   * @property {Hypergiant}
+   */
+  private _playerDisconnected: Hypergiant = new Hypergiant();
+
+  /**
+   * The signal that is dispatched when a player is rejected by the server due to them being banned.
+   *
+   * The data contained in this signal is: the id of the player that was rejected.
+   *
+   * @private
+   *
+   * @property {Hypergiant}
+   */
+  private _playerRejected: Hypergiant = new Hypergiant();
+
+  /**
+   * The signal that is dispatched when a player is kicked from the server.
+   *
+   * The data contained in this signal is: the player object and the reason for the kick.
+   *
+   * @private
+   *
+   * @property {Hypergiant}
+   */
+  private _playerKicked: Hypergiant = new Hypergiant();
+
+  /**
+   * The signal that is dispatched when a player is banned from the server.
+   *
+   * The data contained in this signal is: the player object and the reason for the ban.
+   *
+   * @private
+   *
+   * @property {Hypergiant}
+   */
+  private _playerBanned: Hypergiant = new Hypergiant();
+
+  /**
    * @param {Storage} storage A reference to the Storage module.
    */
   constructor(storage: Storage) {
-    super();
-
     this._storage = storage;
   }
 
@@ -42,6 +95,41 @@ export default class Players extends events.EventEmitter {
    * @returns {Array<Player>}
    */
   get connected(): Array<Player> { return this._connected; }
+
+  /**
+   * Returns the player connected signal.
+   *
+   * @returns {Hypergiant}
+   */
+  get playerConnected(): Hypergiant { return this._playerConnected; }
+
+  /**
+   * Returns the player disconnected signal.
+   *
+   * @returns {Hypergiant}
+   */
+  get playerDisconnected(): Hypergiant { return this._playerDisconnected; }
+
+  /**
+   * Returns the player rejected signal.
+   *
+   * @returns {Hypergiant}
+   */
+  get playerRejected(): Hypergiant { return this._playerRejected; }
+
+  /**
+   * Returns the player kicked signal.
+   *
+   * @returns {Hypergiant}
+   */
+  get playerKicked(): Hypergiant { return this._playerKicked; }
+
+  /**
+   * Returns the player banned signal.
+   *
+   * @returns {Hypergiant}
+   */
+  get playerBanned(): Hypergiant { return this._playerBanned; }
 
   /**
    * Adds a player to the list of connected players.
@@ -55,13 +143,13 @@ export default class Players extends events.EventEmitter {
   add(id: string, socket: any, request: any) {
     const player: Player = new Player(id, socket, request);
 
-    player.on('kick', (player: Player, reason: string) => this._onkick(player, reason));
+    player.kicked.add((player: Player, reason: string) => this._onkick(player, reason));
 
-    player.on('ban', (player: Player, reason: string) => this._onban(player, reason));
+    player.banned.add((player: Player, reason: string) => this._onban(player, reason));
 
     this._connected.push(player);
 
-    this.emit('player-connected', player);
+    this.playerConnected.dispatch(player);
   }
 
   /**
@@ -74,7 +162,18 @@ export default class Players extends events.EventEmitter {
   reject(id: string, socket: any, request: any) {
     socket.close(4000, 'youre banned fool');
 
-    this.emit('player-rejected', id);
+    this.playerRejected.dispatch(id);
+  }
+
+  /**
+   * Remove all listeners from all signals.
+   */
+  removeAllListeners() {
+    this.playerConnected.removeAll();
+    this.playerDisconnected.removeAll();
+    this.playerRejected.removeAll();
+    this.playerKicked.removeAll();
+    this.playerBanned.removeAll();
   }
 
   /**
@@ -89,7 +188,7 @@ export default class Players extends events.EventEmitter {
   private _remove(player: Player) {
     this._connected = this._connected.filter((pl: Player) => pl.id !== player.id);
 
-    this.emit('player-disconnected', player);
+    this.playerDisconnected.dispatch(player);
   }
 
   /**
@@ -105,7 +204,7 @@ export default class Players extends events.EventEmitter {
   private _onkick(player: Player, reason: string) {
     this._remove(player);
 
-    this.emit('player-kicked', player, reason);
+    this.playerKicked.dispatch(player, reason);
   }
 
   /**
@@ -123,6 +222,6 @@ export default class Players extends events.EventEmitter {
 
     this._remove(player);
 
-    this.emit('player-banned', player, reason);
+    this.playerBanned.dispatch(player, reason);
   }
 }
