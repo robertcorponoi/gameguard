@@ -12,12 +12,12 @@ Table of Contents
 
 ## **Properties**
 
-### **created**
+### **rooms**
 
 This getter returns all of the rooms that have been created.
 
 ```js
-const rooms = gameguard.rooms.created;
+const rooms = gameguard.rooms.rooms;
 ```
 
 ## **Signals**
@@ -26,22 +26,22 @@ The rooms module dispatches signals when rooms are created or destroyed.
 
 If you are new to signals, check out [hypergiant](https://github.com/robertcorponoi/hypergiant) to see the signals that gameguard is using.
 
-### **roomCreated**
+### **created**
 
 Dispatched when a room is created with the room object.
 
 ```js
-gameguard.rooms.roomCreated.add(room => {
+gameguard.rooms.created.add(room => {
   console.log(room);
 });
 ```
 
-### **roomDestroyed**
+### **destroyed**
 
 Dispatched when a room is destroyed with the name of the room that was destroyed..
 
 ```js
-gameguard.rooms.roomDestroyed.add(roomName => {
+gameguard.rooms.destroyed.add(roomName => {
   console.log(roomName);
 });
 ```

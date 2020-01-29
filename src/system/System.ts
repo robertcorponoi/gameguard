@@ -31,6 +31,6 @@ export default class System {
    * @param {string} contents The contents of the message to send. The contents can be an object but it must be stringified.
    */
   broadcast(type: string, contents: string) {
-    this._players.connected.map((player: Player) => player.message(type, contents));
+    this._players.players.map((player: Player) => player.message(type, contents));
   }
 }

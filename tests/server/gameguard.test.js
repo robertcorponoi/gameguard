@@ -85,7 +85,7 @@ describe('Players', () => {
       addMockClients(1);
 
       setTimeout(() => {
-        chai.expect(gameGuard.players.connected.length).to.equal(1);
+        chai.expect(gameGuard.players.players.length).to.equal(1);
 
         done();
       }, 1000);
@@ -95,7 +95,7 @@ describe('Players', () => {
       addMockClients(1);
 
       setTimeout(() => {
-        chai.expect(gameGuard.players.connected[0].ip).to.equal('123.456.0.1') && chai.expect(gameGuard.players.connected[0].id).to.equal('1dfd0497-a2f3-43de-9a55-d965bdde9d70');
+        chai.expect(gameGuard.players.players[0].ip).to.equal('123.456.0.1') && chai.expect(gameGuard.players.players[0].id).to.equal('1dfd0497-a2f3-43de-9a55-d965bdde9d70');
 
         done();
       }, 1000);
@@ -104,7 +104,7 @@ describe('Players', () => {
     it('should emit and event when the player object is created', done => {
       const spy = sinon.spy();
 
-      gameGuard.players.playerConnected.add(spy);
+      gameGuard.players.connected.add(spy);
 
       addMockClients(1);
 
@@ -120,7 +120,7 @@ describe('Players', () => {
 
   describe('Messaging players', () => {
     it('should send a message to a player', done => {
-      gameGuard.players.playerConnected.add((player) => {
+      gameGuard.players.connected.add((player) => {
 
         player.message('info', 'hello there!');
 
@@ -141,7 +141,7 @@ describe('Players', () => {
 
       let players = [];
 
-      gameGuard.players.playerConnected.add(player => {
+      gameGuard.players.connected.add(player => {
         players.push(player);
 
         player.message('debug', 'x: 5');
@@ -165,9 +165,9 @@ describe('Players', () => {
     it('should kick a player', done => {
       const spy = sinon.spy();
 
-      gameGuard.players.playerKicked.add(spy);
+      gameGuard.players.kicked.add(spy);
 
-      gameGuard.players.playerConnected.add(player => player.kick('for testing'));
+      gameGuard.players.connected.add(player => player.kick('for testing'));
 
       addMockClients(1);
 
@@ -183,9 +183,9 @@ describe('Players', () => {
     it('should kick a player with a reason', done => {
       const spy = sinon.spy();
 
-      gameGuard.players.playerKicked.add(spy);
+      gameGuard.players.kicked.add(spy);
 
-      gameGuard.players.playerConnected.add(player => player.kick('for testing'));
+      gameGuard.players.connected.add(player => player.kick('for testing'));
 
       addMockClients(1);
 
@@ -201,9 +201,9 @@ describe('Players', () => {
     it('should ban a player', done => {
       const spy = sinon.spy();
 
-      gameGuard.players.playerBanned.add(spy);
+      gameGuard.players.banned.add(spy);
 
-      gameGuard.players.playerConnected.add(player => player.ban('for testing'));
+      gameGuard.players.connected.add(player => player.ban('for testing'));
 
       addMockClients(1);
 
@@ -219,9 +219,9 @@ describe('Players', () => {
     it('should ban a player with a reason', done => {
       const spy = sinon.spy();
 
-      gameGuard.players.playerBanned.add(spy);
+      gameGuard.players.banned.add(spy);
 
-      gameGuard.players.playerConnected.add(player => player.ban('for testing'));
+      gameGuard.players.connected.add(player => player.ban('for testing'));
 
       addMockClients(1);
 
@@ -242,9 +242,9 @@ describe('Players', () => {
       let playerId;
       let playersConnected = 0;
 
-      gameGuard.players.playerRejected.add(spy);
+      gameGuard.players.rejected.add(spy);
 
-      gameGuard.players.playerConnected.add(player => {
+      gameGuard.players.connected.add(player => {
         playerId = player.id;
 
         if (playersConnected < 1) player.ban('for testing');
@@ -270,7 +270,7 @@ describe('Players', () => {
 
       let id;
 
-      gameGuard.players.playerConnected.add(player => {
+      gameGuard.players.connected.add(player => {
         id = player.id;
 
         player.ban('for testing');
@@ -302,23 +302,23 @@ describe('Rooms', () => {
     it('should create a room with default capacity', () => {
       const room1 = gameGuard.rooms.create('room1');
 
-      chai.expect(gameGuard.rooms.created[0].name).to.equal('room1') && chai.expect(gameGuard.rooms.created[0].capacity).to.equal(Infinity) && chai.expect(room1.name).to.equal('room1');
+      chai.expect(gameGuard.rooms.rooms[0].name).to.equal('room1') && chai.expect(gameGuard.rooms.rooms[0].capacity).to.equal(Infinity) && chai.expect(room1.name).to.equal('room1');
     });
 
     it('should create a room with a capacity of 10', () => {
-      gameGuard.rooms._created = [];
+      gameGuard.rooms._rooms = [];
 
       gameGuard.rooms.create('room1', 10);
 
-      chai.expect(gameGuard.rooms.created[0].name).to.equal('room1') && chai.expect(gameGuard.rooms.created[0].capacity).to.equal(10);
+      chai.expect(gameGuard.rooms.rooms[0].name).to.equal('room1') && chai.expect(gameGuard.rooms.rooms[0].capacity).to.equal(10);
     });
 
     it('should create a room and emit an event when the room is created', done => {
-      gameGuard.rooms._created = [];
+      gameGuard.rooms._rooms = [];
 
       const spy = sinon.spy();
 
-      gameGuard.rooms.roomCreated.add(spy);
+      gameGuard.rooms.created.add(spy);
 
       gameGuard.rooms.create('room1', 10);
 
@@ -330,11 +330,11 @@ describe('Rooms', () => {
     });
 
     it('should create a room and emit an event when the room is created with the room object', done => {
-      gameGuard.rooms._created = [];
+      gameGuard.rooms._rooms = [];
 
       const spy = sinon.spy();
 
-      gameGuard.rooms.roomCreated.add(spy);
+      gameGuard.rooms.created.add(spy);
 
       gameGuard.rooms.create('room1', 10);
 
@@ -346,7 +346,7 @@ describe('Rooms', () => {
     });
 
     it('should fail creating a new room with the same name as an existing room', done => {
-      gameGuard.rooms._created = [];
+      gameGuard.rooms._rooms = [];
 
       gameGuard.rooms.create('room1');
 
@@ -359,21 +359,21 @@ describe('Rooms', () => {
   describe('Destroying rooms', () => {
     it('should destroy a room', () => {
 
-      gameGuard.rooms._created = [];
+      gameGuard.rooms._rooms = [];
 
       gameGuard.rooms.create('room1');
 
       gameGuard.rooms.destroy('room1');
 
-      chai.expect(gameGuard.rooms.created.length).to.equal(0);
+      chai.expect(gameGuard.rooms.rooms.length).to.equal(0);
     });
 
     it('should destroy a room and emit an event', done => {
-      gameGuard.rooms._created = [];
+      gameGuard.rooms._rooms = [];
 
       const spy = sinon.spy();
 
-      gameGuard.rooms.roomCreated.add(spy);
+      gameGuard.rooms.created.add(spy);
 
       gameGuard.rooms.create('room1', 10);
 
@@ -387,11 +387,11 @@ describe('Rooms', () => {
     });
 
     it('should destroy a room and emit an event with the room name', done => {
-      gameGuard.rooms._created = [];
+      gameGuard.rooms._rooms = [];
 
       const spy = sinon.spy();
 
-      gameGuard.rooms.roomDestroyed.add(spy);
+      gameGuard.rooms.destroyed.add(spy);
 
       gameGuard.rooms.create('room1', 10);
 
@@ -409,7 +409,7 @@ describe('Rooms', () => {
     it('should add a player to a room', done => {
       const room1 = gameGuard.rooms.create('room1');
 
-      gameGuard.players.playerConnected.add(player => room1.add(player));
+      gameGuard.players.connected.add(player => room1.add(player));
 
       addMockClients();
 
@@ -423,11 +423,11 @@ describe('Rooms', () => {
     it('should remove a player from a room', done => {
       const players = [];
 
-      gameGuard.rooms._created = [];
+      gameGuard.rooms._rooms = [];
 
       const room1 = gameGuard.rooms.create('room1');
 
-      gameGuard.players.playerConnected.add(player => {
+      gameGuard.players.connected.add(player => {
         room1.add(player);
 
         players.push(player);
@@ -445,11 +445,11 @@ describe('Rooms', () => {
     });
 
     it('should remove all players from a room', done => {
-      gameGuard.rooms._created = [];
+      gameGuard.rooms._rooms = [];
 
       const room1 = gameGuard.rooms.create('room1');
 
-      gameGuard.players.playerConnected.add(player => room1.add(player));
+      gameGuard.players.connected.add(player => room1.add(player));
 
       addMockClients(2);
 
@@ -469,11 +469,11 @@ describe('Rooms', () => {
 
       let players = [];
 
-      gameGuard.rooms._created = [];
+      gameGuard.rooms._rooms = [];
 
       const broadcastRoom = gameGuard.rooms.create('broadcastRoom');
 
-      gameGuard.players.playerConnected.add(player => {
+      gameGuard.players.connected.add(player => {
         players.push(player);
 
         broadcastRoom.add(player);
@@ -509,7 +509,7 @@ describe('Messaging all players in the server', () => {
       gameGuard.system.broadcast('info', 'Hello World!');
 
       setTimeout(() => {
-        chai.expect(gameGuard.players.connected[0]._socket.messages[0]).to.equal('{"type":"info","content":"Hello World!"}') && chai.expect(gameGuard.players.connected[1]._socket.messages[0]).to.equal('{"type":"info","content":"Hello World!"}');
+        chai.expect(gameGuard.players.players[0]._socket.messages[0]).to.equal('{"type":"info","content":"Hello World!"}') && chai.expect(gameGuard.players.players[1]._socket.messages[0]).to.equal('{"type":"info","content":"Hello World!"}');
       }, 3000);
       done();
 

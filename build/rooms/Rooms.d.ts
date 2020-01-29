@@ -11,7 +11,7 @@ export default class Rooms {
      *
      * @property {Array<Room>}
      */
-    private _created;
+    private _rooms;
     /**
      * The signal that is dispatched when a room is created.
      *
@@ -21,7 +21,7 @@ export default class Rooms {
      *
      * @property {Hypergiant}
      */
-    private _roomCreated;
+    private _created;
     /**
      * The signal that is dispatched when a room is destroyed.
      *
@@ -31,25 +31,25 @@ export default class Rooms {
      *
      * @property {Hypergiant}
      */
-    private _roomDestroyed;
+    private _destroyed;
     /**
-     * Returns the rooms that have been created.
+     * Returns all of the rooms that have been created.
      *
      * @returns {Array<Room>}
      */
-    get created(): Array<Room>;
+    get rooms(): Array<Room>;
     /**
-     * Returns the room created signal.
+     * Returns the created signal.
      *
-     * @returns {Hypergiant}
+     * @returns {Array<Room>}
      */
-    get roomCreated(): Hypergiant;
+    get created(): Hypergiant;
     /**
      * Returns the room destroyed signal.
      *
      * @returns {Hypergiant}
      */
-    get roomDestroyed(): Hypergiant;
+    get destroyed(): Hypergiant;
     /**
      * Creates a new room and adds it to the list of rooms that have been created.
      *

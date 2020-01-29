@@ -22,6 +22,8 @@ GameGuard is a JavaScript game server for managing your game's players and state
 
 **Note:** As of 0.5.1 support for mongodb has been added but support for a local database has been deprecated. In the next storage update, support for mysql will be added. 
 
+**Final Note:** Since gameguard is pre 1.0.0, there are high chances of a breaking change with each update. Once gameguard enters 1.0.0 this will be normalized.
+
 This is mostly due to pitfalls of local storage options and will not be re-implemented unless there is enough support for it. Please feel free to open an issue if you feel like you have a good case for it being re-implemented. 
 
 **Table of Contents**
@@ -100,6 +102,8 @@ A good starting point for creating a `.env` file is the `.sample.env` file. This
 At it's core, GameGuard works around taking clients and turning them into players.
 
 To see all of the properties, signals, and methods available to use with players, check out the [player documentation](docs/players.md).
+
+Once a player has connected or through outher signals that return a player object, you can interact with that player and perform actions such as kicking/banning. Check out the [individual player documentation](docs/player.md).
 
 ## **Rooms**
 

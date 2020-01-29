@@ -1,8 +1,16 @@
-0.9.0 / 2020-01-27
+0.10.0 / 2020-01-28
+===================
+* [FEATURE] Normalized signal names.
+* [FEATURE] Changed rooms `created` to `rooms` and players `connected` to `players` since signal names changed.
+* [DOCS] Updated documentation for new signal names.
+* [DOCS] Added individual player documentation at docs/player.md.
+* [TEST] Udpated tests.
+
+0.9.0 / 2020-01-28
 ==================
 * [FEATURE] Changed from using events to signals.
 * [DOCS] Updated documentation for signals.
-* [MISC] Updated tests.
+* [TEST] Updated tests.
 * [MISC] Updated dependencies to their latest versions.
 
 0.8.0 / 2020-01-25

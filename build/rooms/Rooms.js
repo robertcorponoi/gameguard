@@ -17,7 +17,7 @@ class Rooms {
          *
          * @property {Array<Room>}
          */
-        this._created = [];
+        this._rooms = [];
         /**
          * The signal that is dispatched when a room is created.
          *
@@ -27,7 +27,7 @@ class Rooms {
          *
          * @property {Hypergiant}
          */
-        this._roomCreated = new hypergiant_1.default();
+        this._created = new hypergiant_1.default();
         /**
          * The signal that is dispatched when a room is destroyed.
          *
@@ -37,26 +37,26 @@ class Rooms {
          *
          * @property {Hypergiant}
          */
-        this._roomDestroyed = new hypergiant_1.default();
+        this._destroyed = new hypergiant_1.default();
     }
     /**
-     * Returns the rooms that have been created.
+     * Returns all of the rooms that have been created.
+     *
+     * @returns {Array<Room>}
+     */
+    get rooms() { return this._rooms; }
+    /**
+     * Returns the created signal.
      *
      * @returns {Array<Room>}
      */
     get created() { return this._created; }
     /**
-     * Returns the room created signal.
-     *
-     * @returns {Hypergiant}
-     */
-    get roomCreated() { return this._roomCreated; }
-    /**
      * Returns the room destroyed signal.
      *
      * @returns {Hypergiant}
      */
-    get roomDestroyed() { return this._roomDestroyed; }
+    get destroyed() { return this._destroyed; }
     /**
      * Creates a new room and adds it to the list of rooms that have been created.
      *
@@ -68,13 +68,13 @@ class Rooms {
      * @returns {Room} Returns the created room.
      */
     create(name, capacity = Infinity) {
-        this.created.map((room) => {
+        this.rooms.map((room) => {
             if (room.name === name)
                 throw new Error('A room already exists with the name provided');
         });
         const room = new Room_1.default(name, capacity);
-        this._created.push(room);
-        this.roomCreated.dispatch(room);
+        this._rooms.push(room);
+        this.created.dispatch(room);
         return room;
     }
     /**
@@ -85,15 +85,15 @@ class Rooms {
      * @param {string} name The name of the room to destroy.
      */
     destroy(name) {
-        this._created = this.created.filter((room) => room.name !== name);
-        this.roomDestroyed.dispatch(name);
+        this._rooms = this.rooms.filter((room) => room.name !== name);
+        this.destroyed.dispatch(name);
     }
     /**
      * Removes all listeners attached to any signals.
      */
     removeAllListeners() {
-        this.roomCreated.removeAll();
-        this.roomDestroyed.removeAll();
+        this.created.removeAll();
+        this.destroyed.removeAll();
     }
 }
 exports.default = Rooms;

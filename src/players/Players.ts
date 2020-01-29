@@ -25,7 +25,7 @@ export default class Players {
    * 
    * @property {Array<Player>}
    */
-  private _connected: Array<Player> = [];
+  private _players: Array<Player> = [];
 
   /**
    * The signal that is dispatched when a player connects to the server.
@@ -36,7 +36,7 @@ export default class Players {
    *
    * @property {Hypergiant}
    */
-  private _playerConnected: Hypergiant = new Hypergiant();
+  private _connected: Hypergiant = new Hypergiant();
 
   /**
    * The signal that is dispatched when a player disconnects from the server.
@@ -47,7 +47,7 @@ export default class Players {
    *
    * @property {Hypergiant}
    */
-  private _playerDisconnected: Hypergiant = new Hypergiant();
+  private _disconnected: Hypergiant = new Hypergiant();
 
   /**
    * The signal that is dispatched when a player is rejected by the server due to them being banned.
@@ -58,7 +58,7 @@ export default class Players {
    *
    * @property {Hypergiant}
    */
-  private _playerRejected: Hypergiant = new Hypergiant();
+  private _rejected: Hypergiant = new Hypergiant();
 
   /**
    * The signal that is dispatched when a player is kicked from the server.
@@ -69,7 +69,7 @@ export default class Players {
    *
    * @property {Hypergiant}
    */
-  private _playerKicked: Hypergiant = new Hypergiant();
+  private _kicked: Hypergiant = new Hypergiant();
 
   /**
    * The signal that is dispatched when a player is banned from the server.
@@ -80,7 +80,7 @@ export default class Players {
    *
    * @property {Hypergiant}
    */
-  private _playerBanned: Hypergiant = new Hypergiant();
+  private _banned: Hypergiant = new Hypergiant();
 
   /**
    * @param {Storage} storage A reference to the Storage module.
@@ -94,42 +94,42 @@ export default class Players {
    * 
    * @returns {Array<Player>}
    */
-  get connected(): Array<Player> { return this._connected; }
+  get players(): Array<Player> { return this._players; }
 
   /**
    * Returns the player connected signal.
    *
    * @returns {Hypergiant}
    */
-  get playerConnected(): Hypergiant { return this._playerConnected; }
+  get connected(): Hypergiant { return this._connected; }
 
   /**
    * Returns the player disconnected signal.
    *
    * @returns {Hypergiant}
    */
-  get playerDisconnected(): Hypergiant { return this._playerDisconnected; }
+  get disconnected(): Hypergiant { return this._disconnected; }
 
   /**
    * Returns the player rejected signal.
    *
    * @returns {Hypergiant}
    */
-  get playerRejected(): Hypergiant { return this._playerRejected; }
+  get rejected(): Hypergiant { return this._rejected; }
 
   /**
    * Returns the player kicked signal.
    *
    * @returns {Hypergiant}
    */
-  get playerKicked(): Hypergiant { return this._playerKicked; }
+  get kicked(): Hypergiant { return this._kicked; }
 
   /**
    * Returns the player banned signal.
    *
    * @returns {Hypergiant}
    */
-  get playerBanned(): Hypergiant { return this._playerBanned; }
+  get banned(): Hypergiant { return this._banned; }
 
   /**
    * Adds a player to the list of connected players.
@@ -147,9 +147,9 @@ export default class Players {
 
     player.banned.add((player: Player, reason: string) => this._onban(player, reason));
 
-    this._connected.push(player);
+    this._players.push(player);
 
-    this.playerConnected.dispatch(player);
+    this.connected.dispatch(player);
   }
 
   /**
@@ -162,18 +162,18 @@ export default class Players {
   reject(id: string, socket: any, request: any) {
     socket.close(4000, 'youre banned fool');
 
-    this.playerRejected.dispatch(id);
+    this.rejected.dispatch(id);
   }
 
   /**
    * Remove all listeners from all signals.
    */
   removeAllListeners() {
-    this.playerConnected.removeAll();
-    this.playerDisconnected.removeAll();
-    this.playerRejected.removeAll();
-    this.playerKicked.removeAll();
-    this.playerBanned.removeAll();
+    this.connected.removeAll();
+    this.disconnected.removeAll();
+    this.rejected.removeAll();
+    this.kicked.removeAll();
+    this.banned.removeAll();
   }
 
   /**
@@ -186,9 +186,9 @@ export default class Players {
    * @param {Player} player The player to remove from the list.
    */
   private _remove(player: Player) {
-    this._connected = this._connected.filter((pl: Player) => pl.id !== player.id);
+    this._players = this._players.filter((pl: Player) => pl.id !== player.id);
 
-    this.playerDisconnected.dispatch(player);
+    this.disconnected.dispatch(player);
   }
 
   /**
@@ -204,7 +204,7 @@ export default class Players {
   private _onkick(player: Player, reason: string) {
     this._remove(player);
 
-    this.playerKicked.dispatch(player, reason);
+    this.kicked.dispatch(player, reason);
   }
 
   /**
@@ -222,6 +222,6 @@ export default class Players {
 
     this._remove(player);
 
-    this.playerBanned.dispatch(player, reason);
+    this.banned.dispatch(player, reason);
   }
 }

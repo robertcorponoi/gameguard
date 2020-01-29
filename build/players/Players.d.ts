@@ -20,7 +20,7 @@ export default class Players {
      *
      * @property {Array<Player>}
      */
-    private _connected;
+    private _players;
     /**
      * The signal that is dispatched when a player connects to the server.
      *
@@ -30,7 +30,7 @@ export default class Players {
      *
      * @property {Hypergiant}
      */
-    private _playerConnected;
+    private _connected;
     /**
      * The signal that is dispatched when a player disconnects from the server.
      *
@@ -40,7 +40,7 @@ export default class Players {
      *
      * @property {Hypergiant}
      */
-    private _playerDisconnected;
+    private _disconnected;
     /**
      * The signal that is dispatched when a player is rejected by the server due to them being banned.
      *
@@ -50,7 +50,7 @@ export default class Players {
      *
      * @property {Hypergiant}
      */
-    private _playerRejected;
+    private _rejected;
     /**
      * The signal that is dispatched when a player is kicked from the server.
      *
@@ -60,7 +60,7 @@ export default class Players {
      *
      * @property {Hypergiant}
      */
-    private _playerKicked;
+    private _kicked;
     /**
      * The signal that is dispatched when a player is banned from the server.
      *
@@ -70,7 +70,7 @@ export default class Players {
      *
      * @property {Hypergiant}
      */
-    private _playerBanned;
+    private _banned;
     /**
      * @param {Storage} storage A reference to the Storage module.
      */
@@ -80,37 +80,37 @@ export default class Players {
      *
      * @returns {Array<Player>}
      */
-    get connected(): Array<Player>;
+    get players(): Array<Player>;
     /**
      * Returns the player connected signal.
      *
      * @returns {Hypergiant}
      */
-    get playerConnected(): Hypergiant;
+    get connected(): Hypergiant;
     /**
      * Returns the player disconnected signal.
      *
      * @returns {Hypergiant}
      */
-    get playerDisconnected(): Hypergiant;
+    get disconnected(): Hypergiant;
     /**
      * Returns the player rejected signal.
      *
      * @returns {Hypergiant}
      */
-    get playerRejected(): Hypergiant;
+    get rejected(): Hypergiant;
     /**
      * Returns the player kicked signal.
      *
      * @returns {Hypergiant}
      */
-    get playerKicked(): Hypergiant;
+    get kicked(): Hypergiant;
     /**
      * Returns the player banned signal.
      *
      * @returns {Hypergiant}
      */
-    get playerBanned(): Hypergiant;
+    get banned(): Hypergiant;
     /**
      * Adds a player to the list of connected players.
      *
