@@ -18,7 +18,7 @@ GameGuard is a JavaScript game server for managing your game's players and state
 
 </div>
 
-**Note:** As of 0.7.0 gameguard and gameguard-client installs that match versions will be guaranteed to work with each other.
+**Note:** As of 0.7.0 gameguard and gameguard-client installs that match major and minor versions will be guaranteed to work with each other.
 
 **Note:** As of 0.5.1 support for mongodb has been added but support for a local database has been deprecated. In the next storage update, support for mysql will be added. 
 
@@ -64,7 +64,9 @@ To initialize GameGuard, you have to initialize it with a reference to a http or
 |-------|------|-------------|---------|
 | server | http.Server | A reference to the http server instance to bind to. | |
 | options | Object | | |
-| options.dbType | string | The type of database to use. Current supported options are 'mongodb' and 'mysql' | 'mysql' |
+| options.dbType | string | The type of database to use. Current supported options are 'mongodb' and 'mysql' | 'mongodb' |
+| options.pingInterval | number | The interval at which each player is pinged, in milliseconds. | 30000 |
+| options.latencyCheckInterval | number | The interval at which each player's latency is calculated, in milliseconds. Note that this is a minimum check interval, checks might be sent more often with messages to converse resources but the checks will happen at least every x milliseconds as specified here. | 5000 |
 
 and example of doing this with my personal favorite http server, fastify, is as follows:
 

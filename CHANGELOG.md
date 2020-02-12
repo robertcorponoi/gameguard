@@ -1,4 +1,8 @@
-## 0.11.0 / 2020-02-10
+## 0.11.1 / 2020-02-11
+- [DOCS] Updated docs to include information about the heartbeat and latency check.
+- [MISC] Updated gameguard-client dev dependency to its latest version.
+
+## 0.11.0 / 2020-02-11
 - [FEATURE] Added a hearbeat that checks to see if clients are still connected to the server or not on a customizable interval.
 - [FEATURE] Added a latency check to get the players latency on a customizable interval.
 - [DOCS] Fixed random old documentation.

@@ -1,6 +1,6 @@
 {
   "name": "gameguard",
-  "version": "0.11.0",
+  "version": "0.11.1",
   "description": "A JavaScript game server for managing your game's players and state",
   "main": "build/index.js",
   "scripts": {
@@ -34,7 +34,7 @@
     "fastify": "^2.12.0",
     "fastify-static": "^2.6.0",
     "fs-extra": "^8.1.0",
-    "gameguard-client": "^0.10.0",
+    "gameguard-client": "^0.11.0",
     "koa": "^2.11.0",
     "koa-static": "^5.0.0",
     "mocha": "^7.0.1",

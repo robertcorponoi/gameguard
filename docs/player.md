@@ -25,6 +25,14 @@ This is the most probably ip for the player. The IP is retrieved from either the
 const ip = player.ip;
 ```
 
+### **latency**
+
+The latency between the server and client which is calculated every x milliseconds according to the `latencyCheckInterval` option.
+
+```js
+const interval = player.inverval;
+```
+
 ## **API**
 
 ### **message**

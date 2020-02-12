@@ -25,7 +25,9 @@ export default class Options {
   pingInterval: number = 30000;
 
   /**
-   * The interval at which each player's latency is calculated.
+   * The interval at which each player's latency is calculated, in milliseconds.
+   * 
+   * Note that this is a minimum check interval, checks might be sent more often with messages to converse resources but the checks will happen at least every x milliseconds as specified here.
    * 
    * @property {number}
    * 
