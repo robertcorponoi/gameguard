@@ -29,10 +29,9 @@ const ids = [
   "202817c6-7035-4cf3-aac4-6a0846cf74ac",
 ];
 
-const dbPath = path.resolve(process.cwd(), 'tests', 'server', 'gameguard.db');
-
 const options = {
   dbType: 'mongodb',
+  pingInterval: 1000000
 };
 
 /**
@@ -438,7 +437,9 @@ describe('Rooms', () => {
       setTimeout(() => {
         room1.remove(players[0]);
 
-        chai.expect(room1._players.length).to.equal(1) && chai.expect(room1._players[0]._id).to.equal(ids[1]);
+        chai.expect(room1._players.length).to.equal(1);
+        
+        chai.expect(room1._players[0]._id).to.equal(ids[1]);
 
         done();
       }, 1500);
@@ -485,7 +486,9 @@ describe('Rooms', () => {
         broadcastRoom.broadcast('info', 'Hello World!');
 
         setTimeout(() => {
-          chai.expect(players[0]._socket.messages[0]).to.equal('{"type":"info","contents":"Hello World!"}') && chai.expect(players[1]._socket.messages[0]).to.equal('{"type":"info","contents":"Hello World!"}');
+          const message = players[0]._socket.messages.find(msg => msg == '{"type":"info","contents":"Hello World!"}');
+
+          chai.expect(message).to.not.be.null;
 
           done();
         }, 3000);

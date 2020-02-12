@@ -13,6 +13,22 @@ export default class Options {
      */
     dbType: string;
     /**
+     * The interval at which each player is pinged, in milliseconds.
+     *
+     * @property {number}
+     *
+     * @default 30000
+     */
+    pingInterval: number;
+    /**
+     * The interval at which each player's latency is calculated.
+     *
+     * @property {number}
+     *
+     * @default 5000
+     */
+    latencyCheckInterval: number;
+    /**
      * @param {Object} options The options passed to GameGuard on initialization.
      */
     constructor(options: Object);

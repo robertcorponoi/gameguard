@@ -54,6 +54,40 @@ export default class Player {
      */
     private _banned;
     /**
+     * Indicates whether this player's connection is still alive or not.
+     *
+     * @private
+     *
+     * @property {boolean}
+     *
+     * @default true
+     */
+    private _isAlive;
+    /**
+     * This players latency.
+     *
+     * @private
+     *
+     * @property {number}
+     */
+    private _latency;
+    /**
+     * The value returned from the ping setInterval call.
+     *
+     * @private
+     *
+     * @property {*}
+     */
+    private _pingIntervalId;
+    /**
+     * The value returned from the latency setInterval call.
+     *
+     * @private
+     *
+     * @property {*}
+     */
+    private _latencyIntervalId;
+    /**
      * @param {string} id The id assigned to this player by the client.
      * @param {*} socket A reference to the WebSocket connection object for this player.
      * @param {*} request A reference to the http request object for this player.
@@ -84,6 +118,24 @@ export default class Player {
      */
     get banned(): Hypergiant;
     /**
+     * Gets this player's latency.
+     *
+     * @returns {number}
+     */
+    get latency(): number;
+    /**
+     * Sets the value from the ping setInterval call.
+     *
+     * @param {*} id The new id of the setInterval call.
+     */
+    set pingIntervalId(id: any);
+    /**
+     * Sets the value from the latency setInterval call.
+     *
+     * @param {*} interval The new id of the setInterval call.
+     */
+    set latencyIntervalId(id: any);
+    /**
      * Sends a message to this Player.
      *
      * @param {string} type The type of message to send.
@@ -107,4 +159,16 @@ export default class Player {
      * @param {string} [reason=''] The reason as to why this player's connection was closed and banned.
      */
     ban(reason?: string): void;
+    /**
+     * Pings the player and terminates their connection if they're not responding.
+     */
+    ping(): void;
+    /**
+     * When this client is messaged, check out the type of message and respond accordingly.
+     *
+     * @private
+     *
+     * @param {string} message The message sent from the client.
+     */
+    private _onmessage;
 }

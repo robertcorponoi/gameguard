@@ -8,11 +8,23 @@
     
     const ggc = new GameGuardClient();
 
-    ggc.on('open', (playerId) => {
+    ggc.connected.add(playerId => {
       console.log('hi', playerId);
     });
 
-    ggc.on('close', (reason) => {
+    ggc.messaged.add(message => {
+      console.log(message);
+    });
+
+    // ggc._socket.addEventListener('message', message => {
+    //   const now = performance.now();
+    //   const msg = JSON.parse(message.data);
+
+    //   console.log(now, parseFloat(msg.contents));
+    //   console.log('/2', (now - parseFloat(msg.contents)) / 2);
+    // });
+
+    ggc.disconnected.add(reason => {
       console.log('bye', reason);
     });
   </script>

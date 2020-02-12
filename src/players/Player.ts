@@ -1,6 +1,9 @@
 'use strict'
 
+import { performance } from 'perf_hooks';
+
 import Hypergiant from 'hypergiant';
+
 import Message from '../message/Message';
 
 /**
@@ -64,6 +67,44 @@ export default class Player {
   private _banned: Hypergiant = new Hypergiant();
 
   /**
+   * Indicates whether this player's connection is still alive or not.
+   * 
+   * @private
+   * 
+   * @property {boolean}
+   * 
+   * @default true
+   */
+  private _isAlive: boolean = true;
+
+  /**
+   * This players latency.
+   * 
+   * @private
+   * 
+   * @property {number}
+   */
+  private _latency: number = 0;
+
+  /**
+   * The value returned from the ping setInterval call.
+   * 
+   * @private
+   * 
+   * @property {*}
+   */
+  private _pingIntervalId: any;
+
+  /**
+   * The value returned from the latency setInterval call.
+   * 
+   * @private
+   * 
+   * @property {*}
+   */
+  private _latencyIntervalId: any;
+
+  /**
    * @param {string} id The id assigned to this player by the client.
    * @param {*} socket A reference to the WebSocket connection object for this player.
    * @param {*} request A reference to the http request object for this player.
@@ -76,6 +117,10 @@ export default class Player {
     this._request = request;
 
     this._ip = this._request.headers['x-forwarded-for'] || this._request.connection.remoteAddress;
+
+    this._socket.on('message', (message: string) => this._onmessage(message));
+
+    this._socket.on('pong', () => this._isAlive = true);
   }
 
   /**
@@ -107,6 +152,27 @@ export default class Player {
   get banned(): Hypergiant { return this._banned; }
 
   /**
+   * Gets this player's latency.
+   * 
+   * @returns {number}
+   */
+  get latency(): number { return this._latency; }
+
+  /**
+   * Sets the value from the ping setInterval call.
+   * 
+   * @param {*} id The new id of the setInterval call.
+   */
+  set pingIntervalId(id: any) { this._pingIntervalId = id; }
+
+  /**
+   * Sets the value from the latency setInterval call.
+   * 
+   * @param {*} interval The new id of the setInterval call.
+   */
+  set latencyIntervalId(id: any) { this._latencyIntervalId = id; }
+
+  /**
    * Sends a message to this Player.
    * 
    * @param {string} type The type of message to send.
@@ -114,7 +180,7 @@ export default class Player {
    */
   message(type: string, contents: string) {
     const message: Message = new Message(type, contents);
-    
+
     const messageToString: string = JSON.stringify(message);
 
     this._socket.send(messageToString);
@@ -145,5 +211,40 @@ export default class Player {
     this._socket.close(4000, reason);
 
     this.banned.dispatch(this, reason);
+  }
+
+  /**
+   * Pings the player and terminates their connection if they're not responding.
+   */
+  ping() {
+    if (!this._isAlive) return this.kick('Not responding');
+
+    this._isAlive = false;
+    
+    this._socket.ping(() => {});
+  }
+
+  /**
+   * When this client is messaged, check out the type of message and respond accordingly.
+   * 
+   * @private
+   * 
+   * @param {string} message The message sent from the client.
+   */
+  private _onmessage(message: string) {
+    const messageParsed: any = JSON.parse(message);
+
+    const msg: Message = new Message(messageParsed.type, messageParsed.contents);
+
+    switch (msg.type) {
+      case 'latency-pong':
+        const previous: number = parseInt(msg.contents);
+        const current: number = Date.now();
+
+        this._latency = (current - previous) / 2;
+
+        this.message('latency', `${this.latency}`);
+        break;
+    }
   }
 }

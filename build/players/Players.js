@@ -10,9 +10,10 @@ const Player_1 = __importDefault(require("./Player"));
  */
 class Players {
     /**
+     * @param {Options} options A reference to the options passed to GameGuard on initialization.
      * @param {Storage} storage A reference to the Storage module.
      */
-    constructor(storage) {
+    constructor(options, storage) {
         /**
          * A reference to all of the players that are connected to the server.
          *
@@ -71,6 +72,7 @@ class Players {
          * @property {Hypergiant}
          */
         this._banned = new hypergiant_1.default();
+        this._options = options;
         this._storage = storage;
     }
     /**
@@ -112,7 +114,7 @@ class Players {
     /**
      * Adds a player to the list of connected players.
      *
-     * This also emits the `player-connected` event that contains the Player object as a parameter.
+     * This also dispatches the `connected` signal that contains the Player object as a parameter.
      *
      * @param {string} id The id of the client connecting to the server.
      * @param {*} socket The WebSocket connection object of the client.
@@ -122,6 +124,8 @@ class Players {
         const player = new Player_1.default(id, socket, request);
         player.kicked.add((player, reason) => this._onkick(player, reason));
         player.banned.add((player, reason) => this._onban(player, reason));
+        this._createHeartbeatCheck(player);
+        this._createLatencyCheck(player);
         this._players.push(player);
         this.connected.dispatch(player);
     }
@@ -130,10 +134,9 @@ class Players {
      *
      * @param {string} id The id of the client connecting to the server.
      * @param {*} socket The WebSocket connection object of the client.
-     * @param {*} request The http request object of the client.
      */
     reject(id, socket, request) {
-        socket.close(4000, 'youre banned fool');
+        socket.close(4000, 'Your profile was banned');
         this.rejected.dispatch(id);
     }
     /**
@@ -149,7 +152,7 @@ class Players {
     /**
      * Removes a player from the list of connected players.
      *
-     * This also emits the `player-disconnected` event that contains the Player object as a parameter.
+     * This also dispatches the `disconnected` signal that contains the Player object as a parameter.
      *
      * @private
      *
@@ -162,7 +165,7 @@ class Players {
     /**
      * When a player is kicked, they are removed from the list of connected players.
      *
-     * This also emits a `player-kicked` event that contains the player object and the reason they were kicked as parameters.
+     * This also dispatches the `kick` signal that contains the player object and the reason they were kicked as parameters.
      *
      * @private
      *
@@ -176,7 +179,7 @@ class Players {
     /**
      * When a player is banned, they are removed from the list of connected players and added to a persistent banned players list.
      *
-     * This also emits a `player-banned` event that contains the player object and the reason thye were banned as parameters.
+     * This also dispatches the `banned` signal that contains the player object and the reason thye were banned as parameters.
      *
      * @private
      *
@@ -187,6 +190,31 @@ class Players {
         this._storage.ban(player.id);
         this._remove(player);
         this.banned.dispatch(player, reason);
+    }
+    /**
+     * Creates an interval on the player object for the heartbeat check.
+     *
+     * @private
+     *
+     * @param {Player} player The player to create the heartbeat check for.
+     */
+    _createHeartbeatCheck(player) {
+        player.pingIntervalId = setInterval(() => {
+            player.ping();
+        }, this._options.pingInterval);
+    }
+    /**
+     * Creates an interval on the player object for the latency check.
+     *
+     * @private
+     *
+     * @param {Player} player The player to create the latency check for.
+     */
+    _createLatencyCheck(player) {
+        player.pingIntervalId = setInterval(() => {
+            const time = `${Date.now()}`;
+            player.message('latency-ping', time);
+        }, this._options.latencyCheckInterval);
     }
 }
 exports.default = Players;

@@ -83,8 +83,8 @@ module.exports = class GameGuard {
   /**
    * @param {http.Server|https.Server} server The http server instance to bind to.
    * @param {Object} [options]
-   * @param {string} [options.storageMethod='local'] The type of persistent storage to use with GameGuard. The current available options are 'mongodb' or 'local'.
-   * @param {string} [options.localDbPath=process.cwd()/db/gameguard.db] If local storage is chosen, then the path to where the db file should be created can be specified.
+   * @param {string} [options.dbType='mongodb'] The type of persistent storage to use with GameGuard. The current available options are 'mongodb' or 'mysql'.
+   * @param {string} [options.pingTimeout=30000] The interval at which each player is pinged, in milliseconds.
    */
   constructor(server: (http.Server | https.Server), options: Object) {
     this._server = server;
@@ -95,7 +95,7 @@ module.exports = class GameGuard {
 
     this._storage = new Storage(this._options);
 
-    this._players = new Players(this._storage);
+    this._players = new Players(this._options, this._storage);
 
     this._system = new System(this._players);
 
@@ -142,7 +142,7 @@ module.exports = class GameGuard {
    */
   private _boot() {
     this._socket.on('connection', (ws: any, req: any) => {
-      ws.on('message', (message: string) => this._onmessage(ws, req, message));
+      ws.on('message', this._onmessage.bind(this, ws, req));
     });
   }
 
@@ -160,15 +160,14 @@ module.exports = class GameGuard {
 
     const messageParsed: Message = new Message(messageObject.type, messageObject.contents);
 
-    switch (messageParsed.type) {
-      case 'player-connected':
-        this._storage.isBanned(messageParsed.contents)
-          .then((isBanned) => {
-            if (isBanned) this.players.reject(messageParsed.contents, socket, request); // socket.close(4000, 'you are banned fool');
-            else this.players.add(messageParsed.contents, socket, request);
-          });
+    if (messageParsed.type === 'player-connected') {
+      this._storage.isBanned(messageParsed.contents)
+        .then((isBanned) => {
+          if (isBanned) this.players.reject(messageParsed.contents, socket, request); // socket.close(4000, 'you are banned fool');
+          else this.players.add(messageParsed.contents, socket, request);
 
-        break;
+          this._socket.removeListener('message', this._onmessage);
+        });
     }
   }
 }

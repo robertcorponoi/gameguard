@@ -71,4 +71,6 @@ module.exports = class MockClient extends EventEmitter {
   close(code, reason) {
     this.closed = { status: true, code: code, reason: reason };
   }
+
+  
 };

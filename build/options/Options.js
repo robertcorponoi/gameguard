@@ -18,6 +18,22 @@ class Options {
          * @default 'mongodb'
          */
         this.dbType = 'mongodb';
+        /**
+         * The interval at which each player is pinged, in milliseconds.
+         *
+         * @property {number}
+         *
+         * @default 30000
+         */
+        this.pingInterval = 30000;
+        /**
+         * The interval at which each player's latency is calculated.
+         *
+         * @property {number}
+         *
+         * @default 5000
+         */
+        this.latencyCheckInterval = 5000;
         Object.assign(this, options);
     }
 }

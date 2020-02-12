@@ -33,10 +33,30 @@ class Player {
          * @property {Hypergiant}
          */
         this._banned = new hypergiant_1.default();
+        /**
+         * Indicates whether this player's connection is still alive or not.
+         *
+         * @private
+         *
+         * @property {boolean}
+         *
+         * @default true
+         */
+        this._isAlive = true;
+        /**
+         * This players latency.
+         *
+         * @private
+         *
+         * @property {number}
+         */
+        this._latency = 0;
         this._id = id;
         this._socket = socket;
         this._request = request;
         this._ip = this._request.headers['x-forwarded-for'] || this._request.connection.remoteAddress;
+        this._socket.on('message', (message) => this._onmessage(message));
+        this._socket.on('pong', () => this._isAlive = true);
     }
     /**
      * Returns the id of this player.
@@ -62,6 +82,24 @@ class Player {
      * @returns {Hypergiant}
      */
     get banned() { return this._banned; }
+    /**
+     * Gets this player's latency.
+     *
+     * @returns {number}
+     */
+    get latency() { return this._latency; }
+    /**
+     * Sets the value from the ping setInterval call.
+     *
+     * @param {*} id The new id of the setInterval call.
+     */
+    set pingIntervalId(id) { this._pingIntervalId = id; }
+    /**
+     * Sets the value from the latency setInterval call.
+     *
+     * @param {*} interval The new id of the setInterval call.
+     */
+    set latencyIntervalId(id) { this._latencyIntervalId = id; }
     /**
      * Sends a message to this Player.
      *
@@ -95,6 +133,34 @@ class Player {
     ban(reason = '') {
         this._socket.close(4000, reason);
         this.banned.dispatch(this, reason);
+    }
+    /**
+     * Pings the player and terminates their connection if they're not responding.
+     */
+    ping() {
+        if (!this._isAlive)
+            return this.kick('Not responding');
+        this._isAlive = false;
+        this._socket.ping(() => { });
+    }
+    /**
+     * When this client is messaged, check out the type of message and respond accordingly.
+     *
+     * @private
+     *
+     * @param {string} message The message sent from the client.
+     */
+    _onmessage(message) {
+        const messageParsed = JSON.parse(message);
+        const msg = new Message_1.default(messageParsed.type, messageParsed.contents);
+        switch (msg.type) {
+            case 'latency-pong':
+                const previous = parseInt(msg.contents);
+                const current = Date.now();
+                this._latency = (current - previous) / 2;
+                this.message('latency', `${this.latency}`);
+                break;
+        }
     }
 }
 exports.default = Player;

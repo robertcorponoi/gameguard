@@ -10,33 +10,31 @@ const app = express();
 app.use(express.static(path.resolve(__dirname, 'public')));
 app.use(express.static(path.resolve(__dirname, '..', '..', 'node_modules', 'gameguard-client')));
 
-const GameGuard = require('../../build/index'); 
+const GameGuard = require('../../build/index');
 
 /**
  * Start the express server.
  */
 const server = app.listen(3000, () => console.log('Listening on port 3000'));
 
-const options = { dbType: 'mysql' };
+/**
+ * Set the database to use mongodb and the ping interval to 5000 so we can see it in action.
+ */
+const options = {
+  dbType: 'mongodb',
+  pingInterval: 1000
+};
 
 const gg = new GameGuard(server, options);
 
-gg.players.on('player-connected', (player) => {
-  setTimeout(() => {
-    console.log('banning', player.id);
-    gg._storage.ban(player.id);
+gg.players.connected.add(player => {
 
-    setTimeout(() => {
-      console.log('getting banned players');
-      gg._storage._getBanned().then((banned) => console.log(banned));
-    }, 5000);
-  }, 5000);
 });
 
 /**
  * When a player leaves, log it to the console.
  */
-gg.players.on('player-disconnected', (player) => {
+gg.players.disconnected.add(player => {
   //  console.log('PLAYER LEFT', player.id);
 });
 
