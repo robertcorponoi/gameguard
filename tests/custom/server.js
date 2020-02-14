@@ -22,10 +22,15 @@ const server = app.listen(3000, () => console.log('Listening on port 3000'));
  */
 const options = {
   dbType: 'mongodb',
-  pingInterval: 1000
+  pingInterval: 1000,
+  socketCloseEvents: {
+    banned: { code: 5555, reason: 'you banned fool' }
+  }
 };
 
 const gg = new GameGuard(server, options);
+
+console.log(gg._options);
 
 gg.players.connected.add(player => {
 

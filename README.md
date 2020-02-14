@@ -60,15 +60,38 @@ These used to be one package originally but it was harder to maintain and bundle
 
 To initialize GameGuard, you have to initialize it with a reference to a http or https server and an optional set of options.
 
-| param | type | description | default |
-|-------|------|-------------|---------|
-| server | http.Server | A reference to the http server instance to bind to. | |
-| options | Object | | |
-| options.dbType | string | The type of database to use. Current supported options are 'mongodb' and 'mysql' | 'mongodb' |
-| options.pingInterval | number | The interval at which each player is pinged, in milliseconds. | 30000 |
-| options.latencyCheckInterval | number | The interval at which each player's latency is calculated, in milliseconds. Note that this is a minimum check interval, checks might be sent more often with messages to converse resources but the checks will happen at least every x milliseconds as specified here. | 5000 |
+| param                        | type        | description                                                                                                                                                                                                                                                             | default   |
+|------------------------------|-------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------|
+| server                       | http.Server | A reference to the http server instance to bind to.                                                                                                                                                                                                                     |           |
+| options                      | Object      |                                                                                                                                                                                                                                                                         |           |
+| options.dbType               | string      | The type of database to use. Current supported options are 'mongodb' and 'mysql'                                                                                                                                                                                        | 'mongodb' |
+| options.pingInterval         | number      | The interval at which each player is pinged, in milliseconds.                                                                                                                                                                                                           | 30000     |
+| options.latencyCheckInterval | number      | The interval at which each player's latency is calculated, in milliseconds. Note that this is a minimum check interval, checks might be sent more often with messages to converse resources but the checks will happen at least every x milliseconds as specified here. | 5000      |
+| options.socketCloseInfo      | Object      | Allows you to customize the code and reason that is sent on various player actions such as normal disconnect, kick, ban, or rejection. See below for more information.                                                                                                  |           |
 
-and example of doing this with my personal favorite http server, fastify, is as follows:
+**SocketCloseInfo**
+
+There are currently 4 events that cause the player's connection to the server to close:
+
+- normal close
+- player kicked
+- player banned
+- player rejected by server because they're already banned
+
+These 4 sets of codes and reasons are defined in the `options.socketCloseInfo` object as follows:
+
+```js
+options.socketCloseInfo = {
+  closed: { code: 4001, reason: 'The server has shut down.' },
+  kicked: SocketClose = { code: 4002, reason: 'You have been kicked from the server.' };
+  banned: SocketClose = { code: 4003, reason: 'You have been banned from the server.' };
+  rejected: SocketClose = { code: 4004, reason: 'You are banned from the server.' };
+}
+```
+
+Check below for an example of changing these options.
+
+A basic example of initializing GameGuard this with my personal favorite http server, fastify, is as follows:
 
 ```js
 'use strict'
@@ -79,6 +102,33 @@ const fastify = require('fastify')({ logger: true });
 const GameGuard = require('gameguard');
 
 const gg = new GameGuard(fastify.server);
+
+fastify.listen(3000, (err, address) => {
+  if (err) throw err;
+
+  fastify.log.info(`server listening on ${address}`);
+});
+```
+
+Here's an example of initializaing GamGuard with options:
+
+```js
+'use strict'
+
+const path = require('path');
+const fastify = require('fastify')({ logger: true });
+
+const GameGuard = require('gameguard');
+
+const options = {
+  pingInterval: 1000,
+  socketCloseInfo = {
+    kicked: { code: 5005, reason: `It appears you've been kicked.` },
+    banned: { code: 5050, reason: `You are most definitely banned.` },
+  }
+};
+
+const gg = new GameGuard(fastify.server, options);
 
 fastify.listen(3000, (err, address) => {
   if (err) throw err;

@@ -59,6 +59,12 @@ class Player {
         this._socket.on('pong', () => this._isAlive = true);
     }
     /**
+     * Returns this player's websocket connection.
+     *
+     * @returns {*}
+     */
+    get socket() { return this._socket; }
+    /**
      * Returns the id of this player.
      *
      * @returns {string}
@@ -116,10 +122,9 @@ class Player {
      *
      * This also emits the `kick` event with the player object and the reason as parameters.
      *
-     * @param {string} [reason=''] The reason as to why this player's connection was closed.
+     * @param {string} [reason=''] The reason as to why this player's connection was closed. This will override any reason set for `kicked` in the initialization options.
      */
     kick(reason = '') {
-        this._socket.close(4000, reason);
         this.kicked.dispatch(this, reason);
     }
     /**
@@ -128,10 +133,9 @@ class Player {
      *
      * This also emits the `ban` event with the player object, the ban reason, and their id or ip as parameters.
      *
-     * @param {string} [reason=''] The reason as to why this player's connection was closed and banned.
+     * @param {string} [reason=''] The reason as to why this player's connection was closed and banned. This will override any reason set for `banned` in the initialization options.
      */
     ban(reason = '') {
-        this._socket.close(4000, reason);
         this.banned.dispatch(this, reason);
     }
     /**

@@ -93,7 +93,7 @@ module.exports = class GameGuard {
             this._storage.isBanned(messageParsed.contents)
                 .then((isBanned) => {
                 if (isBanned)
-                    this.players.reject(messageParsed.contents, socket, request); // socket.close(4000, 'you are banned fool');
+                    this.players.reject(messageParsed.contents, socket);
                 else
                     this.players.add(messageParsed.contents, socket, request);
                 this._socket.removeListener('message', this._onmessage);

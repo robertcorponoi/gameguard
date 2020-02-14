@@ -1,5 +1,7 @@
 'use strict'
 
+import SocketCloseInfo from './SocketCloseInfo';
+
 /**
  * Defines the options available for an instance of GameGuard and their default values.
  */
@@ -36,9 +38,21 @@ export default class Options {
   latencyCheckInterval: number = 5000;
 
   /**
+   * 
+   * Defines the close codes and reasons for those codes that can be used for various actions such as closing, kicking, and banning.
+   * 
+   * When kicking or banning a player, these are used if no reason is provided.
+   * 
+   * @property {socketCloseInfo}
+   */
+  socketCloseInfo: SocketCloseInfo;
+
+  /**
    * @param {Object} options The options passed to GameGuard on initialization.
    */
-  constructor(options: Object) {
+  constructor(options: any) {
     Object.assign(this, options);
+
+    this.socketCloseInfo = new SocketCloseInfo(options.socketCloseInfo);
   }
 }

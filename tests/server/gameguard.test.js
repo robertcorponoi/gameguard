@@ -1,13 +1,11 @@
 'use strict'
 
-const path = require('path');
 const http = require('http');
 const chai = require('chai');
 const sinon = require('sinon');
-const fs = require('fs-extra');
 
 const GameGuard = require('../../build/index');
-const MockClient = require('./MockClient/MockClient');
+const MockClient = require('./MockClient');
 
 let server;
 let gameGuard;
@@ -179,6 +177,26 @@ describe('Players', () => {
       }, 1000);
     });
 
+    it('should kick a player with the default reason', done => {
+      let p;
+
+      gameGuard.players.connected.add(player => {
+        p = player;
+
+        player.kick();
+      });
+
+      addMockClients(1);
+
+      setTimeout(() => {
+        chai.expect(p._socket.closed).to.deep.equal({ status: true, code: 4002, reason: 'You have been kicked from the server.' });
+
+        gameGuard.players.removeAllListeners();
+
+        done();
+      }, 1000);
+    });
+
     it('should kick a player with a reason', done => {
       const spy = sinon.spy();
 
@@ -215,6 +233,26 @@ describe('Players', () => {
       }, 1000);
     });
 
+    it('should ban a player with the default reason', done => {
+      let p;
+
+      gameGuard.players.connected.add(player => {
+        p = player;
+
+        player.ban();
+      });
+
+      addMockClients(1);
+
+      setTimeout(() => {
+        chai.expect(p._socket.closed).to.deep.equal({ status: true, code: 4003, reason: 'You have been banned from the server.' });
+
+        gameGuard.players.removeAllListeners();
+
+        done();
+      }, 1000);
+    });
+
     it('should ban a player with a reason', done => {
       const spy = sinon.spy();
 
@@ -232,8 +270,8 @@ describe('Players', () => {
         done();
       }, 1000);
     });
-    
-    it('should ban a player and prevent them from connecting the next time', function(done) {
+
+    it('should ban a player and prevent them from connecting the next time', function (done) {
       this.timeout(15000);
 
       const spy = sinon.spy();
@@ -264,7 +302,7 @@ describe('Players', () => {
       }, 5000);
     });
 
-    it('should ban a player and add them to the banned players list', function(done) {
+    it('should ban a player and add them to the banned players list', function (done) {
       this.timeout(10000);
 
       let id;
@@ -438,7 +476,7 @@ describe('Rooms', () => {
         room1.remove(players[0]);
 
         chai.expect(room1._players.length).to.equal(1);
-        
+
         chai.expect(room1._players[0]._id).to.equal(ids[1]);
 
         done();

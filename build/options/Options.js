@@ -1,5 +1,9 @@
 'use strict';
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
+const SocketCloseInfo_1 = __importDefault(require("./SocketCloseInfo"));
 /**
  * Defines the options available for an instance of GameGuard and their default values.
  */
@@ -37,6 +41,7 @@ class Options {
          */
         this.latencyCheckInterval = 5000;
         Object.assign(this, options);
+        this.socketCloseInfo = new SocketCloseInfo_1.default(options.socketCloseInfo);
     }
 }
 exports.default = Options;

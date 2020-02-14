@@ -137,7 +137,7 @@ export default class Players {
      * @param {string} id The id of the client connecting to the server.
      * @param {*} socket The WebSocket connection object of the client.
      */
-    reject(id: string, socket: any, request: any): void;
+    reject(id: string, socket: any): void;
     /**
      * Remove all listeners from all signals.
      */
@@ -160,7 +160,7 @@ export default class Players {
      * @private
      *
      * @param {Player} player The player that was kicked.
-     * @param {string} reason The reason as to why the player was kicked.
+     * @param {string} [reason] The reason as to why the player was kicked.
      */
     private _onkick;
     /**
@@ -171,7 +171,7 @@ export default class Players {
      * @private
      *
      * @param {Player} player The player that was banned.
-     * @param {string} reason The reason as to why the player was banned.
+     * @param {string} [reason] The reason as to why the player was banned.
      */
     private _onban;
     /**

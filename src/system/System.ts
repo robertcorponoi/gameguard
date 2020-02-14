@@ -33,4 +33,8 @@ export default class System {
   broadcast(type: string, contents: string) {
     this._players.players.map((player: Player) => player.message(type, contents));
   }
+
+  /**
+   * Shuts down the server and 
+   */
 }

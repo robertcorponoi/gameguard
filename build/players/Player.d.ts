@@ -94,6 +94,12 @@ export default class Player {
      */
     constructor(id: string, socket: any, request: any);
     /**
+     * Returns this player's websocket connection.
+     *
+     * @returns {*}
+     */
+    get socket(): any;
+    /**
      * Returns the id of this player.
      *
      * @returns {string}
@@ -147,7 +153,7 @@ export default class Player {
      *
      * This also emits the `kick` event with the player object and the reason as parameters.
      *
-     * @param {string} [reason=''] The reason as to why this player's connection was closed.
+     * @param {string} [reason=''] The reason as to why this player's connection was closed. This will override any reason set for `kicked` in the initialization options.
      */
     kick(reason?: string): void;
     /**
@@ -156,7 +162,7 @@ export default class Player {
      *
      * This also emits the `ban` event with the player object, the ban reason, and their id or ip as parameters.
      *
-     * @param {string} [reason=''] The reason as to why this player's connection was closed and banned.
+     * @param {string} [reason=''] The reason as to why this player's connection was closed and banned. This will override any reason set for `banned` in the initialization options.
      */
     ban(reason?: string): void;
     /**

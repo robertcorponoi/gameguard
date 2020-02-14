@@ -177,8 +177,8 @@ export default class Players {
    * @param {string} id The id of the client connecting to the server.
    * @param {*} socket The WebSocket connection object of the client.
    */
-  reject(id: string, socket: any, request: any) {
-    socket.close(4000, 'Your profile was banned');
+  reject(id: string, socket: any) {
+    socket.close(this._options.socketCloseInfo.rejected.code, this._options.socketCloseInfo.rejected.reason);
 
     this.rejected.dispatch(id);
   }
@@ -217,9 +217,13 @@ export default class Players {
    * @private
    * 
    * @param {Player} player The player that was kicked.
-   * @param {string} reason The reason as to why the player was kicked.
+   * @param {string} [reason] The reason as to why the player was kicked.
    */
-  private _onkick(player: Player, reason: string) {
+  private _onkick(player: Player, reason?: string) {
+    const closeReason: string = reason ? reason : this._options.socketCloseInfo.kicked.reason;
+
+    player.socket.close(this._options.socketCloseInfo.kicked.code, closeReason);
+
     this._remove(player);
 
     this.kicked.dispatch(player, reason);
@@ -233,9 +237,13 @@ export default class Players {
    * @private
    * 
    * @param {Player} player The player that was banned.
-   * @param {string} reason The reason as to why the player was banned.
+   * @param {string} [reason] The reason as to why the player was banned.
    */
-  private _onban(player: Player, reason: string) {
+  private _onban(player: Player, reason?: string) {
+    const banReason: string = reason ? reason : this._options.socketCloseInfo.banned.reason;
+
+    player.socket.close(this._options.socketCloseInfo.banned.code, banReason);
+
     this._storage.ban(player.id);
 
     this._remove(player);

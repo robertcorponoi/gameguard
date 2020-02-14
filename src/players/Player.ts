@@ -1,10 +1,9 @@
 'use strict'
 
-import { performance } from 'perf_hooks';
-
 import Hypergiant from 'hypergiant';
 
 import Message from '../message/Message';
+import SocketCloseInfo from '../options/SocketCloseInfo';
 
 /**
  * A Player represents a client that has established a successful connection to GameGuard.
@@ -124,6 +123,13 @@ export default class Player {
   }
 
   /**
+   * Returns this player's websocket connection.
+   * 
+   * @returns {*}
+   */
+  get socket(): any { return this._socket; }
+
+  /**
    * Returns the id of this player.
    * 
    * @returns {string}
@@ -191,11 +197,9 @@ export default class Player {
    * 
    * This also emits the `kick` event with the player object and the reason as parameters.
    * 
-   * @param {string} [reason=''] The reason as to why this player's connection was closed.
+   * @param {string} [reason=''] The reason as to why this player's connection was closed. This will override any reason set for `kicked` in the initialization options.
    */
   kick(reason: string = '') {
-    this._socket.close(4000, reason);
-
     this.kicked.dispatch(this, reason);
   }
 
@@ -205,11 +209,9 @@ export default class Player {
    * 
    * This also emits the `ban` event with the player object, the ban reason, and their id or ip as parameters.
    * 
-   * @param {string} [reason=''] The reason as to why this player's connection was closed and banned.
+   * @param {string} [reason=''] The reason as to why this player's connection was closed and banned. This will override any reason set for `banned` in the initialization options.
    */
   ban(reason: string = '') {
-    this._socket.close(4000, reason);
-
     this.banned.dispatch(this, reason);
   }
 

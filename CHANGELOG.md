@@ -1,3 +1,8 @@
+## 0.12.0 / 2020-02-13
+- [FEATURE] Added ability to customize close messages for the different events.
+- [DOCS] Updated documentation for the feature added above.
+- [MISC] Updated mongoose package to its latest version.
+
 ## 0.11.1 / 2020-02-11
 - [DOCS] Updated docs to include information about the heartbeat and latency check.
 - [MISC] Updated gameguard-client dev dependency to its latest version.
