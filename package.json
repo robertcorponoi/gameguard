@@ -1,12 +1,13 @@
 {
   "name": "gameguard",
-  "version": "0.13.0",
+  "version": "0.13.1",
   "description": "A JavaScript game server for managing your game's players and state",
   "main": "build/index.js",
   "scripts": {
     "tsc": "tsc",
     "tsc:watch": "tsc --watch",
-    "test": "mocha tests/server/gameguard.test.js"
+    "test": "mocha tests/server/gameguard.test.js",
+    "test:custom": "node tests/custom/server.js"
   },
   "repository": {
     "type": "git",
@@ -34,7 +35,7 @@
     "fastify": "^2.12.0",
     "fastify-static": "^2.6.0",
     "fs-extra": "^8.1.0",
-    "gameguard-client": "^0.12.0",
+    "gameguard-client": "^0.13.0",
     "koa": "^2.11.0",
     "koa-static": "^5.0.0",
     "mocha": "^7.0.1",

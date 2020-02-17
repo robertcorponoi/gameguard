@@ -86,7 +86,7 @@ module.exports = class GameGuard {
    * @param {string} [options.dbType='mongodb'] The type of persistent storage to use with GameGuard. The current available options are 'mongodb' or 'mysql'.
    * @param {string} [options.pingTimeout=30000] The interval at which each player is pinged, in milliseconds.
    */
-  constructor(server: (http.Server | https.Server), options: Object) {
+  constructor(server: (http.Server | https.Server), options: Object = {}) {
     this._server = server;
 
     this._options = new Options(options);

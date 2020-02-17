@@ -1,4 +1,7 @@
-## 0.13.0 / 202-02-16
+## 0.13.1 / 2020-02-16
+- [HOTFIX] Made the initialization options have a default value if no options are provided.
+
+## 0.13.0 / 2020-02-16
 - [FEATURE] Added an option to auto-kick a player with a high latency according to a customizable `maxLatency` option.
 - [FEATURE] Added a signal that gets dispatched when the player gets kicked for high latency.
 - [DOCS] Added docs for new `maxLatency` option and the `timedOut` socket close message.
