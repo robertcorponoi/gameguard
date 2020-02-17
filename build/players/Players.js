@@ -5,6 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const hypergiant_1 = __importDefault(require("hypergiant"));
 const Player_1 = __importDefault(require("./Player"));
+const Message_1 = __importDefault(require("../message/Message"));
 /**
  * The Players module handles managing players as a batch group.
  */
@@ -72,6 +73,14 @@ class Players {
          * @property {Hypergiant}
          */
         this._banned = new hypergiant_1.default();
+        /**
+         * The signal that is dispatched when a player's connection has timed out.
+         *
+         * @private
+         *
+         * @property {Hypergiant}
+         */
+        this._timedOut = new hypergiant_1.default();
         this._options = options;
         this._storage = storage;
     }
@@ -112,6 +121,12 @@ class Players {
      */
     get banned() { return this._banned; }
     /**
+     * Returns the player timed out signal.
+     *
+     * @returns {Hypergiant}
+     */
+    get timedOut() { return this._timedOut; }
+    /**
      * Adds a player to the list of connected players.
      *
      * This also dispatches the `connected` signal that contains the Player object as a parameter.
@@ -124,6 +139,7 @@ class Players {
         const player = new Player_1.default(id, socket, request);
         player.kicked.add((player, reason) => this._onkick(player, reason));
         player.banned.add((player, reason) => this._onban(player, reason));
+        player.socket.on('message', (msg) => this._onmessage(player, msg));
         this._createHeartbeatCheck(player);
         this._createLatencyCheck(player);
         this._players.push(player);
@@ -194,6 +210,41 @@ class Players {
         this._storage.ban(player.id);
         this._remove(player);
         this.banned.dispatch(player, reason);
+    }
+    /**
+     * When a player's latency exceeds the `maxLatency`, they are automatically kicked from the server.
+     *
+     * @private
+     *
+     * @param {Player} player The player that timed out.
+     */
+    _ontimedout(player) {
+        const timedOutReason = this._options.socketCloseInfo.timedOut.reason;
+        player.socket.close(this._options.socketCloseInfo.timedOut.code, timedOutReason);
+        this._remove(player);
+        this.timedOut.dispatch(player);
+    }
+    /**
+     * When a player recieves a message, it's processed here.
+     *
+     * @private
+     *
+     * @param {Player} player The player that received the message.
+     * @param {string} message The message that was received.
+     */
+    _onmessage(player, msg) {
+        const parsed = JSON.parse(msg);
+        const message = new Message_1.default(parsed.type, parsed.contents);
+        switch (message.type) {
+            case 'latency-pong':
+                const previous = parseInt(message.contents);
+                const current = Date.now();
+                player.latency = (current - previous) / 2;
+                if (player.latency > this._options.maxLatency)
+                    this._ontimedout(player);
+                player.message('latency', `${player.latency}`);
+                break;
+        }
     }
     /**
      * Creates an interval on the player object for the heartbeat check.

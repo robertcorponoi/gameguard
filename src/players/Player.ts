@@ -79,11 +79,9 @@ export default class Player {
   /**
    * This players latency.
    * 
-   * @private
-   * 
    * @property {number}
    */
-  private _latency: number = 0;
+  public latency: number = 0;
 
   /**
    * The value returned from the ping setInterval call.
@@ -158,13 +156,6 @@ export default class Player {
   get banned(): Hypergiant { return this._banned; }
 
   /**
-   * Gets this player's latency.
-   * 
-   * @returns {number}
-   */
-  get latency(): number { return this._latency; }
-
-  /**
    * Sets the value from the ping setInterval call.
    * 
    * @param {*} id The new id of the setInterval call.
@@ -234,7 +225,7 @@ export default class Player {
    * @param {string} message The message sent from the client.
    */
   private _onmessage(message: string) {
-    const messageParsed: any = JSON.parse(message);
+    /*const messageParsed: any = JSON.parse(message);
 
     const msg: Message = new Message(messageParsed.type, messageParsed.contents);
 
@@ -247,6 +238,6 @@ export default class Player {
 
         this.message('latency', `${this.latency}`);
         break;
-    }
+    }*/
   }
 }

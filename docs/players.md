@@ -75,3 +75,13 @@ gameguard.players.banned.add((player, reason) => {
   console.log(player, reason);
 });
 ```
+
+### **timedOut**
+
+This is dispatched when the player's latency has excedeed the value set for the `maxLatency` option and has been kicked.
+
+```js
+gameguard.players.timedOut.add((player) => {
+  console.log(player);
+});
+```

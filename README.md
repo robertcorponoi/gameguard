@@ -67,6 +67,7 @@ To initialize GameGuard, you have to initialize it with a reference to a http or
 | options.dbType               | string      | The type of database to use. Current supported options are 'mongodb' and 'mysql'                                                                                                                                                                                        | 'mongodb' |
 | options.pingInterval         | number      | The interval at which each player is pinged, in milliseconds.                                                                                                                                                                                                           | 30000     |
 | options.latencyCheckInterval | number      | The interval at which each player's latency is calculated, in milliseconds. Note that this is a minimum check interval, checks might be sent more often with messages to converse resources but the checks will happen at least every x milliseconds as specified here. | 5000      |
+| options.maxLatency           | number      | The maximum latency, in milliseconds, the player can have before being kicked. | 300 |
 | options.socketCloseInfo      | Object      | Allows you to customize the code and reason that is sent on various player actions such as normal disconnect, kick, ban, or rejection. See below for more information.                                                                                                  |           |
 
 **SocketCloseInfo**
@@ -77,15 +78,17 @@ There are currently 4 events that cause the player's connection to the server to
 - player kicked
 - player banned
 - player rejected by server because they're already banned
+- player latency too high
 
 These 4 sets of codes and reasons are defined in the `options.socketCloseInfo` object as follows:
 
 ```js
 options.socketCloseInfo = {
   closed: { code: 4001, reason: 'The server has shut down.' },
-  kicked: SocketClose = { code: 4002, reason: 'You have been kicked from the server.' };
-  banned: SocketClose = { code: 4003, reason: 'You have been banned from the server.' };
-  rejected: SocketClose = { code: 4004, reason: 'You are banned from the server.' };
+  kicked: { code: 4002, reason: 'You have been kicked from the server.' };
+  banned: { code: 4003, reason: 'You have been banned from the server.' };
+  rejected: { code: 4004, reason: 'You are banned from the server.' };
+  timedOut: { code: 4005, reason: 'You have been kicked from the server for high latency.' }; 
 }
 ```
 

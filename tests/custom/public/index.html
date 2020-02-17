@@ -5,27 +5,15 @@
 <body>
   <script type="module">
     import GameGuardClient from './gameguard-client.js';
-    
-    const ggc = new GameGuardClient();
 
-    ggc.connected.add(playerId => {
-      console.log('hi', playerId);
-    });
+    const ggc = new GameGuardClient();
 
     ggc.messaged.add(message => {
       console.log(message);
     });
 
-    // ggc._socket.addEventListener('message', message => {
-    //   const now = performance.now();
-    //   const msg = JSON.parse(message.data);
-
-    //   console.log(now, parseFloat(msg.contents));
-    //   console.log('/2', (now - parseFloat(msg.contents)) / 2);
-    // });
-
-    ggc.disconnected.add(reason => {
-      console.log('bye', reason);
+    ggc.disconnected.add(blah => {
+      console.log('timed out', blah);
     });
   </script>
 </body>

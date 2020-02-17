@@ -7,6 +7,7 @@ import Hypergiant from 'hypergiant';
 import Player from './Player';
 import Options from '../options/Options';
 import Storage from '../storage/Storage';
+import Message from '../message/Message';
 
 /**
  * The Players module handles managing players as a batch group.
@@ -95,6 +96,15 @@ export default class Players {
   private _banned: Hypergiant = new Hypergiant();
 
   /**
+   * The signal that is dispatched when a player's connection has timed out.
+   *
+   * @private
+   *
+   * @property {Hypergiant}
+   */
+  private _timedOut: Hypergiant = new Hypergiant();
+
+  /**
    * @param {Options} options A reference to the options passed to GameGuard on initialization.
    * @param {Storage} storage A reference to the Storage module.
    */
@@ -147,6 +157,13 @@ export default class Players {
   get banned(): Hypergiant { return this._banned; }
 
   /**
+   * Returns the player timed out signal.
+   *
+   * @returns {Hypergiant}
+   */
+  get timedOut(): Hypergiant { return this._timedOut; }
+
+  /**
    * Adds a player to the list of connected players.
    * 
    * This also dispatches the `connected` signal that contains the Player object as a parameter.
@@ -161,6 +178,8 @@ export default class Players {
     player.kicked.add((player: Player, reason: string) => this._onkick(player, reason));
 
     player.banned.add((player: Player, reason: string) => this._onban(player, reason));
+
+    player.socket.on('message', (msg: string) => this._onmessage(player, msg));
 
     this._createHeartbeatCheck(player);
 
@@ -249,6 +268,50 @@ export default class Players {
     this._remove(player);
 
     this.banned.dispatch(player, reason);
+  }
+
+  /**
+   * When a player's latency exceeds the `maxLatency`, they are automatically kicked from the server.
+   *
+   * @private
+   *
+   * @param {Player} player The player that timed out.
+   */
+  private _ontimedout(player: Player) {
+    const timedOutReason: string = this._options.socketCloseInfo.timedOut.reason;
+
+    player.socket.close(this._options.socketCloseInfo.timedOut.code, timedOutReason);
+
+    this._remove(player);
+
+    this.timedOut.dispatch(player);
+  }
+
+  /**
+   * When a player recieves a message, it's processed here.
+   *
+   * @private
+   *
+   * @param {Player} player The player that received the message.
+   * @param {string} message The message that was received.
+   */
+  private _onmessage(player: Player, msg: string) {
+    const parsed: any = JSON.parse(msg);
+
+    const message: Message = new Message(parsed.type, parsed.contents);
+
+    switch (message.type) {
+      case 'latency-pong':
+        const previous: number = parseInt(message.contents);
+        const current: number = Date.now();
+
+        player.latency = (current - previous) / 2;
+
+        if (player.latency > this._options.maxLatency) this._ontimedout(player); 
+
+        player.message('latency', `${player.latency}`);
+        break;
+    }
   }
 
   /**

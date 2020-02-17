@@ -28,6 +28,12 @@ export default class SocketCloseInfo {
      */
     rejected: SocketClose;
     /**
+     * The code and reason that is sent when the player's latency exceeds the `maxLatency` option value.
+     *
+     * @property {SocketClose}
+     */
+    timedOut: SocketClose;
+    /**
      * @param {Object} options The options to override the default close event objects.
      */
     constructor(options?: Object);

@@ -81,6 +81,14 @@ export default class Players {
      */
     private _banned;
     /**
+     * The signal that is dispatched when a player's connection has timed out.
+     *
+     * @private
+     *
+     * @property {Hypergiant}
+     */
+    private _timedOut;
+    /**
      * @param {Options} options A reference to the options passed to GameGuard on initialization.
      * @param {Storage} storage A reference to the Storage module.
      */
@@ -121,6 +129,12 @@ export default class Players {
      * @returns {Hypergiant}
      */
     get banned(): Hypergiant;
+    /**
+     * Returns the player timed out signal.
+     *
+     * @returns {Hypergiant}
+     */
+    get timedOut(): Hypergiant;
     /**
      * Adds a player to the list of connected players.
      *
@@ -174,6 +188,23 @@ export default class Players {
      * @param {string} [reason] The reason as to why the player was banned.
      */
     private _onban;
+    /**
+     * When a player's latency exceeds the `maxLatency`, they are automatically kicked from the server.
+     *
+     * @private
+     *
+     * @param {Player} player The player that timed out.
+     */
+    private _ontimedout;
+    /**
+     * When a player recieves a message, it's processed here.
+     *
+     * @private
+     *
+     * @param {Player} player The player that received the message.
+     * @param {string} message The message that was received.
+     */
+    private _onmessage;
     /**
      * Creates an interval on the player object for the heartbeat check.
      *

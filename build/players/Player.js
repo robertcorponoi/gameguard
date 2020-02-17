@@ -46,11 +46,9 @@ class Player {
         /**
          * This players latency.
          *
-         * @private
-         *
          * @property {number}
          */
-        this._latency = 0;
+        this.latency = 0;
         this._id = id;
         this._socket = socket;
         this._request = request;
@@ -88,12 +86,6 @@ class Player {
      * @returns {Hypergiant}
      */
     get banned() { return this._banned; }
-    /**
-     * Gets this player's latency.
-     *
-     * @returns {number}
-     */
-    get latency() { return this._latency; }
     /**
      * Sets the value from the ping setInterval call.
      *
@@ -155,16 +147,20 @@ class Player {
      * @param {string} message The message sent from the client.
      */
     _onmessage(message) {
-        const messageParsed = JSON.parse(message);
-        const msg = new Message_1.default(messageParsed.type, messageParsed.contents);
+        /*const messageParsed: any = JSON.parse(message);
+    
+        const msg: Message = new Message(messageParsed.type, messageParsed.contents);
+    
         switch (msg.type) {
-            case 'latency-pong':
-                const previous = parseInt(msg.contents);
-                const current = Date.now();
-                this._latency = (current - previous) / 2;
-                this.message('latency', `${this.latency}`);
-                break;
-        }
+          case 'latency-pong':
+            const previous: number = parseInt(msg.contents);
+            const current: number = Date.now();
+    
+            this._latency = (current - previous) / 2;
+    
+            this.message('latency', `${this.latency}`);
+            break;
+        }*/
     }
 }
 exports.default = Player;

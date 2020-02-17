@@ -66,11 +66,9 @@ export default class Player {
     /**
      * This players latency.
      *
-     * @private
-     *
      * @property {number}
      */
-    private _latency;
+    latency: number;
     /**
      * The value returned from the ping setInterval call.
      *
@@ -123,12 +121,6 @@ export default class Player {
      * @returns {Hypergiant}
      */
     get banned(): Hypergiant;
-    /**
-     * Gets this player's latency.
-     *
-     * @returns {number}
-     */
-    get latency(): number;
     /**
      * Sets the value from the ping setInterval call.
      *

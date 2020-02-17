@@ -1,3 +1,11 @@
+## 0.13.0 / 202-02-16
+- [FEATURE] Added an option to auto-kick a player with a high latency according to a customizable `maxLatency` option.
+- [FEATURE] Added a signal that gets dispatched when the player gets kicked for high latency.
+- [DOCS] Added docs for new `maxLatency` option and the `timedOut` socket close message.
+- [DOCS] Added docs for the timed out signal.
+- [DOCS] Removed accidental typescript from code sample in README.
+- [MISC] Updated dev dependencies to their latest versions.
+
 ## 0.12.0 / 2020-02-13
 - [FEATURE] Added ability to customize close messages for the different events.
 - [DOCS] Updated documentation for the feature added above.

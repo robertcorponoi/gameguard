@@ -32,6 +32,14 @@ export default class Options {
      */
     latencyCheckInterval: number;
     /**
+     * The max latency, in milliseconds, a player can have before being kicked.
+     *
+     * @property {number}
+     *
+     * @default 300
+     */
+    maxLatency: number;
+    /**
      *
      * Defines the close codes and reasons for those codes that can be used for various actions such as closing, kicking, and banning.
      *

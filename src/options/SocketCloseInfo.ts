@@ -35,6 +35,13 @@ export default class SocketCloseInfo {
   rejected: SocketClose = { code: 4004, reason: 'You are banned from the server.' };
 
   /**
+   * The code and reason that is sent when the player's latency exceeds the `maxLatency` option value.
+   *
+   * @property {SocketClose}
+   */
+  timedOut: SocketClose = { code: 4005, reason: 'You have been kicked from the server for high latency.' };
+
+  /**
    * @param {Object} options The options to override the default close event objects.
    */
   constructor(options: Object = {}) {

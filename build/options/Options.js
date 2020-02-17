@@ -40,6 +40,14 @@ class Options {
          * @default 5000
          */
         this.latencyCheckInterval = 5000;
+        /**
+         * The max latency, in milliseconds, a player can have before being kicked.
+         *
+         * @property {number}
+         *
+         * @default 300
+         */
+        this.maxLatency = 300;
         Object.assign(this, options);
         this.socketCloseInfo = new SocketCloseInfo_1.default(options.socketCloseInfo);
     }

@@ -32,6 +32,12 @@ class SocketCloseInfo {
          * @property {SocketClose}
          */
         this.rejected = { code: 4004, reason: 'You are banned from the server.' };
+        /**
+         * The code and reason that is sent when the player's latency exceeds the `maxLatency` option value.
+         *
+         * @property {SocketClose}
+         */
+        this.timedOut = { code: 4005, reason: 'You have been kicked from the server for high latency.' };
         Object.assign(this, options);
     }
 }
