@@ -51,7 +51,7 @@ module.exports = class MockClient extends EventEmitter {
    * @param {string} message The stringified message Object to send to the game server.
    */
   message(message) {
-    this.emit('message', message, this, this.req);
+    this.emit('message', Buffer.from(message), this, this.req);
   }
 
   /**
@@ -60,7 +60,13 @@ module.exports = class MockClient extends EventEmitter {
    * @param {string} message The message received from the game server.
    */
   send(message) {
-    this.messages.push(message);
+    const decoder = new TextDecoder('utf8');
+
+    const decoded = decoder.decode(message);
+
+    const parsed = JSON.parse(decoded);
+
+    this.messages.push(parsed);
   }
 
   /**

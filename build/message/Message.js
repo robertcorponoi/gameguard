@@ -13,6 +13,19 @@ class Message {
     constructor(type, contents) {
         this.type = type;
         this.contents = contents;
+        this.binary = this._toBinary();
+    }
+    /**
+     * Converts the message to binary.
+     *
+     * @private
+     *
+     * @returns {ArrayBuffer} Returns the binary representation of this message.
+     */
+    _toBinary() {
+        const message = JSON.stringify({ type: this.type, contents: this.contents });
+        const buffer = Buffer.from(message);
+        return buffer;
     }
 }
 exports.default = Message;

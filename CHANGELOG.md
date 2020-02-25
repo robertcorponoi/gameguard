@@ -1,3 +1,6 @@
+## 0.x.x / 2020-02-23
+- [MISC] Updated out-of-date dependencies to their latest versions. 
+
 ## 0.13.1 / 2020-02-16
 - [HOTFIX] Made the initialization options have a default value if no options are provided.
 

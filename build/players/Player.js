@@ -106,8 +106,7 @@ class Player {
      */
     message(type, contents) {
         const message = new Message_1.default(type, contents);
-        const messageToString = JSON.stringify(message);
-        this._socket.send(messageToString);
+        this._socket.send(message.binary);
     }
     /**
      * Closes this player's connection to the server.

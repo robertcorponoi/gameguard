@@ -147,9 +147,11 @@ describe('Players', () => {
       addMockClients(2);
 
       setTimeout(() => {
-        chai.expect(players[0]._socket.messages[0]).to.equal('{"type":"debug","contents":"x: 5"}') &&
-
-          chai.expect(players[1]._socket.messages[0]).to.equal('{"type":"debug","contents":"x: 5"}')
+        chai.expect(players[0]._socket.messages[0].type).to.equal('debug'); 
+        chai.expect(players[0]._socket.messages[0].contents).to.equal('x: 5');
+        
+        chai.expect(players[1]._socket.messages[0].type).to.equal('debug'); 
+        chai.expect(players[1]._socket.messages[0].contents).to.equal('x: 5');
 
         gameGuard.players.removeAllListeners();
 

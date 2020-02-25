@@ -21,6 +21,13 @@ export default class Message {
   contents: string;
 
   /**
+   * The binary representation of this message.
+   *
+   * @property {ArrayBuffer}
+   */
+  binary: ArrayBuffer;
+
+  /**
    * @param {string} type The type of message that this message is.
    * @param {string} message The contents of this message.
    */
@@ -28,5 +35,22 @@ export default class Message {
     this.type = type;
 
     this.contents = contents;
+
+    this.binary = this._toBinary();
+  }
+
+  /**
+   * Converts the message to binary.
+   *
+   * @private
+   *
+   * @returns {ArrayBuffer} Returns the binary representation of this message.
+   */
+  private _toBinary(): ArrayBuffer {
+    const message = JSON.stringify({ type: this.type, contents: this.contents });
+
+    const buffer: ArrayBuffer = Buffer.from(message);
+
+    return buffer;
   }
 }

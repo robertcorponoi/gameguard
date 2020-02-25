@@ -5,7 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const hypergiant_1 = __importDefault(require("hypergiant"));
 const Player_1 = __importDefault(require("./Player"));
-const Message_1 = __importDefault(require("../message/Message"));
+const utils_1 = require("../utils/utils");
 /**
  * The Players module handles managing players as a batch group.
  */
@@ -230,11 +230,10 @@ class Players {
      * @private
      *
      * @param {Player} player The player that received the message.
-     * @param {string} message The message that was received.
+     * @param {ArrayBuffer} msg The message that was received.
      */
     _onmessage(player, msg) {
-        const parsed = JSON.parse(msg);
-        const message = new Message_1.default(parsed.type, parsed.contents);
+        const message = utils_1.bufferToMessage(msg);
         switch (message.type) {
             case 'latency-pong':
                 const previous = parseInt(message.contents);
