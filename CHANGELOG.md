@@ -1,4 +1,6 @@
-## 0.x.x / 2020-02-23
+## 0.14.0 / 2020-02-26
+- [FEATURE] Made messages get send and read as binary.
+- [MISC] Tested changes with latest version of gameguard-client.
 - [MISC] Updated out-of-date dependencies to their latest versions. 
 
 ## 0.13.1 / 2020-02-16

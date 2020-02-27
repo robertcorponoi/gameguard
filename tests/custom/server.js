@@ -30,6 +30,7 @@ const options = {
 const gg = new GameGuard(server, options);
 
 gg.players.connected.add(player => {
+  console.log(player.id);
 });
 
 /**
