@@ -9,6 +9,8 @@ import Options from '../options/Options';
 import Storage from '../storage/Storage';
 import Message from '../message/Message';
 
+import { bufferToMessage } from '../utils/utils';
+
 /**
  * The Players module handles managing players as a batch group.
  */
@@ -179,7 +181,7 @@ export default class Players {
 
     player.banned.add((player: Player, reason: string) => this._onban(player, reason));
 
-    player.socket.on('message', (msg: string) => this._onmessage(player, msg));
+    player.socket.on('message', (msg: ArrayBuffer) => this._onmessage(player, msg));
 
     this._createHeartbeatCheck(player);
 
@@ -293,12 +295,10 @@ export default class Players {
    * @private
    *
    * @param {Player} player The player that received the message.
-   * @param {string} message The message that was received.
+   * @param {ArrayBuffer} msg The message that was received.
    */
-  private _onmessage(player: Player, msg: string) {
-    const parsed: any = JSON.parse(msg);
-
-    const message: Message = new Message(parsed.type, parsed.contents);
+  private _onmessage(player: Player, msg: ArrayBuffer) {
+    const message: Message = bufferToMessage(msg); 
 
     switch (message.type) {
       case 'latency-pong':

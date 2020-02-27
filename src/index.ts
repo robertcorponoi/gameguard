@@ -9,6 +9,8 @@ import Players from './players/Players';
 import Options from './options/Options';
 import Message from './message/Message';
 
+import { bufferToMessage } from './utils/utils';
+
 import ws from 'ws';
 import http from 'http';
 import https from 'https';
@@ -131,9 +133,9 @@ module.exports = class GameGuard {
    * 
    * @returns {Message} Returns the newly created message.
    */
-  message(type: string, contents: string): Message {
+    /*message(type: string, contents: string): Message {
     return new Message(type, contents);
-  }
+  }*/
 
   /**
    * Sets up the WebSocket connection events and initializes all properties of the server instance.
@@ -153,12 +155,10 @@ module.exports = class GameGuard {
    * 
    * @param {*} socket The WebSocket connection object of the client that sent the message.
    * @param {*} request The http request object of the client that sent the message.
-   * @param {string} message The stringified message from the client.
+   * @param {ArrayBuffer} message The stringified message from the client.
    */
-  private _onmessage(socket: any, request: any, message: string) {
-    const messageObject: any = JSON.parse(message);
-
-    const messageParsed: Message = new Message(messageObject.type, messageObject.contents);
+  private _onmessage(socket: any, request: any, message: ArrayBuffer) {
+    const messageParsed: Message = bufferToMessage(message); 
 
     if (messageParsed.type === 'player-connected') {
       this._storage.isBanned(messageParsed.contents)

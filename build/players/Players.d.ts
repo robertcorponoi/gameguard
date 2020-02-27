@@ -202,7 +202,7 @@ export default class Players {
      * @private
      *
      * @param {Player} player The player that received the message.
-     * @param {string} message The message that was received.
+     * @param {ArrayBuffer} msg The message that was received.
      */
     private _onmessage;
     /**

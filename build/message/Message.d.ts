@@ -17,8 +17,22 @@ export default class Message {
      */
     contents: string;
     /**
+     * The binary representation of this message.
+     *
+     * @property {ArrayBuffer}
+     */
+    binary: ArrayBuffer;
+    /**
      * @param {string} type The type of message that this message is.
      * @param {string} message The contents of this message.
      */
     constructor(type: string, contents: string);
+    /**
+     * Converts the message to binary.
+     *
+     * @private
+     *
+     * @returns {ArrayBuffer} Returns the binary representation of this message.
+     */
+    private _toBinary;
 }

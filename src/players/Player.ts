@@ -5,6 +5,8 @@ import Hypergiant from 'hypergiant';
 import Message from '../message/Message';
 import SocketCloseInfo from '../options/SocketCloseInfo';
 
+import { bufferToMessage } from '../utils/utils';
+
 /**
  * A Player represents a client that has established a successful connection to GameGuard.
  * 
@@ -178,9 +180,7 @@ export default class Player {
   message(type: string, contents: string) {
     const message: Message = new Message(type, contents);
 
-    const messageToString: string = JSON.stringify(message);
-
-    this._socket.send(messageToString);
+    this._socket.send(message.binary);
   }
 
   /**

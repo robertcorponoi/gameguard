@@ -8,7 +8,8 @@ const app = express();
  * Specify the directory that contains the static files that should be served.
  */
 app.use(express.static(path.resolve(__dirname, 'public')));
-app.use(express.static(path.resolve(__dirname, '..', '..', 'node_modules', 'gameguard-client')));
+app.use(express.static(path.resolve(__dirname, '..', '..', '..', 'gameguard-client')));
+//app.use(express.static(path.resolve(__dirname, '..', '..', 'node_modules', 'gameguard-client')));
 
 const GameGuard = require('../../build/index');
 
@@ -29,7 +30,7 @@ const options = {
 const gg = new GameGuard(server, options);
 
 gg.players.connected.add(player => {
-
+  console.log(player.id);
 });
 
 /**

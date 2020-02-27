@@ -9,7 +9,7 @@ const System_1 = __importDefault(require("./system/System"));
 const Storage_1 = __importDefault(require("./storage/Storage"));
 const Players_1 = __importDefault(require("./players/Players"));
 const Options_1 = __importDefault(require("./options/Options"));
-const Message_1 = __importDefault(require("./message/Message"));
+const utils_1 = require("./utils/utils");
 const ws_1 = __importDefault(require("ws"));
 /**
  * A JavaScript game server for managing your game's players and state
@@ -64,9 +64,9 @@ module.exports = class GameGuard {
      *
      * @returns {Message} Returns the newly created message.
      */
-    message(type, contents) {
-        return new Message_1.default(type, contents);
-    }
+    /*message(type: string, contents: string): Message {
+    return new Message(type, contents);
+  }*/
     /**
      * Sets up the WebSocket connection events and initializes all properties of the server instance.
      *
@@ -84,11 +84,10 @@ module.exports = class GameGuard {
      *
      * @param {*} socket The WebSocket connection object of the client that sent the message.
      * @param {*} request The http request object of the client that sent the message.
-     * @param {string} message The stringified message from the client.
+     * @param {ArrayBuffer} message The stringified message from the client.
      */
     _onmessage(socket, request, message) {
-        const messageObject = JSON.parse(message);
-        const messageParsed = new Message_1.default(messageObject.type, messageObject.contents);
+        const messageParsed = utils_1.bufferToMessage(message);
         if (messageParsed.type === 'player-connected') {
             this._storage.isBanned(messageParsed.contents)
                 .then((isBanned) => {
