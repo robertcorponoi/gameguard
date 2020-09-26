@@ -1,3 +1,10 @@
+## 1.0.0 / 2020-09-12
+- [FEATURE] 
+- [TEST] Updated tests and removed unnecessary tests.
+- [TEST] Updated framework tests and add npm scripts to run them.
+- [DOCS] Updated documentation to reflect latest changes.
+- [MISC] Updated out-of-date-dependencies to their latest versions.
+
 ## 0.14.1 / 2020-04-17
 - [MISC] Updated out-of-date dependencies to their latest versions which also fixed all possible fixed security vulnerabilities.
 

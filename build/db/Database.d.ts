@@ -3,7 +3,7 @@ import Hypergiant from 'hypergiant';
 /**
  * Handles database operations in mongodb or mysql.
  */
-export default class Storage {
+export default class Database {
     /**
      * A reference to the mongodb connection.
      *
@@ -24,7 +24,7 @@ export default class Storage {
      */
     connected: Hypergiant;
     /**
-     * When the Storage module is initialized we set up the connection to the
+     * When the Database module is initialized we set up the connection to the
      * database and dispatch the `connected` signal.
      */
     constructor();
@@ -53,7 +53,7 @@ export default class Storage {
      *
      * @async
      *
-     * @param {string} pid The id of the player to add to the database.
+     * @param {string} pid The id of the player to add or update.
      * @param {Object} update The properties of the player to update.
      */
     updatePlayer(pid: string, update: Object): Promise<void>;

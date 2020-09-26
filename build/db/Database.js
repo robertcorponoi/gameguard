@@ -18,9 +18,9 @@ const Player_1 = __importDefault(require("./schemas/Player"));
 /**
  * Handles database operations in mongodb or mysql.
  */
-class Storage {
+class Database {
     /**
-     * When the Storage module is initialized we set up the connection to the
+     * When the Database module is initialized we set up the connection to the
      * database and dispatch the `connected` signal.
      */
     constructor() {
@@ -88,7 +88,7 @@ class Storage {
      *
      * @async
      *
-     * @param {string} pid The id of the player to add to the database.
+     * @param {string} pid The id of the player to add or update.
      * @param {Object} update The properties of the player to update.
      */
     updatePlayer(pid, update) {
@@ -142,4 +142,4 @@ class Storage {
         });
     }
 }
-exports.default = Storage;
+exports.default = Database;

@@ -2,7 +2,7 @@
 
 # GameGuard
 
-GameGuard is a JavaScript game server for managing your game's players and state
+GameGuard is a NodeJS game server that can be used to manage the players connecting to your game, manage rooms and the players in them, and more.
 
 </div>
 
@@ -18,27 +18,19 @@ GameGuard is a JavaScript game server for managing your game's players and state
 
 </div>
 
-**Note:** As of 0.7.0 gameguard and gameguard-client installs that match major and minor versions will be guaranteed to work with each other.
-
-**Note:** As of 0.5.1 support for mongodb has been added but support for a local database has been deprecated. In the next storage update, support for mysql will be added. 
-
-**Final Note:** Since gameguard is pre 1.0.0, there are high chances of a breaking change with each update. Once gameguard enters 1.0.0 this will be normalized.
-
-This is mostly due to pitfalls of local storage options and will not be re-implemented unless there is enough support for it. Please feel free to open an issue if you feel like you have a good case for it being re-implemented. 
+**Note:** This is the post 1.0.0 version of GameGuard that has lots of breaking changes from the last version due to major simplification. All of the previous features still exist but the API has changed to be more simple and streamlined. GameGuard can now be used on it's own but it has been simplified in order to be able to be extended further to suit your needs.
 
 **Table of Contents**
 
 - [Install](#install)
 - [Initialization](#initialization)
-- [Databases](#databases)
-- [Players](#players)
-- [Rooms](#rooms)
-- [System](#system)
-- [Tests](#tests)
+- [Operation](#operation)
+- [Guides](#guides)
+  - [Database](#database)
 
 ## **Install**
 
-To install GameGuard you need the server side package (this one) and then a client-side package. Currently only [gameguard-client](https://github.com/robertcorponoi/gameguard-client) is supported but in the future there will be guides on creating your own client side solution to communicate with GameGuard.
+To install GameGuard you need the server side package (this one) and then a client-side package. Currently only [gameguard-client](https://github.com/robertcorponoi/gameguard-client) is supported but in the future there will be guides on creating your own client side solution to communicate with the GameGuard server.
 
 To install GameGuard you can use:
 
@@ -52,47 +44,21 @@ and if you need gameguard-client, you can use:
 $ npm install gameguard-client
 ```
 
-These used to be one package originally but it was harder to maintain and bundle both of them so they have been split up.
-
 **Note:** The documentation for gameguard-client will not be covered here but you can head over to the [gameguard-client documentation](https://github.com/robertcorponoi/gameguard-client#README.md) for client side usage.
 
 ## **Initialization**
 
 To initialize GameGuard, you have to initialize it with a reference to a http or https server and an optional set of options.
 
-| param                        | type        | description                                                                                                                                                                                                                                                             | default   |
-|------------------------------|-------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------|
-| server                       | http.Server | A reference to the http server instance to bind to.                                                                                                                                                                                                                     |           |
-| options                      | Object      |                                                                                                                                                                                                                                                                         |           |
-| options.dbType               | string      | The type of database to use. Current supported options are 'mongodb' and 'mysql'                                                                                                                                                                                        | 'mongodb' |
-| options.pingInterval         | number      | The interval at which each player is pinged, in milliseconds.                                                                                                                                                                                                           | 30000     |
-| options.latencyCheckInterval | number      | The interval at which each player's latency is calculated, in milliseconds. Note that this is a minimum check interval, checks might be sent more often with messages to converse resources but the checks will happen at least every x milliseconds as specified here. | 5000      |
-| options.maxLatency           | number      | The maximum latency, in milliseconds, the player can have before being kicked. | 300 |
-| options.socketCloseInfo      | Object      | Allows you to customize the code and reason that is sent on various player actions such as normal disconnect, kick, ban, or rejection. See below for more information.                                                                                                  |           |
+| param                        | type        | description                                                                    | default   |
+|------------------------------|-------------|--------------------------------------------------------------------------------|-----------|
+| server                       | http.Server | A reference to the http server instance to bind to.                            |           |
+| options                      | Object      |                                                                                |           |
+| options.heartbeatInterval    | number      | The interval at which each player is pinged, in milliseconds.                  | 30000     |
+| options.latencyCheckInterval | number      | The interval at which each player's latency is calculated, in milliseconds.    | 5000      |
+| options.maxLatency           | number      | The maximum latency, in milliseconds, the player can have before being kicked. | 300       |
 
-**SocketCloseInfo**
-
-There are currently 4 events that cause the player's connection to the server to close:
-
-- normal close
-- player kicked
-- player banned
-- player rejected by server because they're already banned
-- player latency too high
-
-These 4 sets of codes and reasons are defined in the `options.socketCloseInfo` object as follows:
-
-```js
-options.socketCloseInfo = {
-  closed: { code: 4001, reason: 'The server has shut down.' },
-  kicked: { code: 4002, reason: 'You have been kicked from the server.' };
-  banned: { code: 4003, reason: 'You have been banned from the server.' };
-  rejected: { code: 4004, reason: 'You are banned from the server.' };
-  timedOut: { code: 4005, reason: 'You have been kicked from the server for high latency.' }; 
-}
-```
-
-Check below for an example of changing these options.
+**Example:**
 
 A basic example of initializing GameGuard this with my personal favorite http server, fastify, is as follows:
 
@@ -119,38 +85,87 @@ Here's an example of initializaing GamGuard with options:
 'use strict'
 
 const path = require('path');
-const fastify = require('fastify')({ logger: true });
-
+const fastify = require('fastify')({ logger: false });
 const GameGuard = require('gameguard');
 
-const options = {
-  pingInterval: 1000,
-  socketCloseInfo = {
-    kicked: { code: 5005, reason: `It appears you've been kicked.` },
-    banned: { code: 5050, reason: `You are most definitely banned.` },
-  }
-};
+// Set the GameGuard server to use a latency check interval of 1000ms.
+const gg = new GameGuard(fastify.server, { latencyCheckInterval: 1000 });
 
-const gg = new GameGuard(fastify.server, options);
-
+// Have the server listen on port 3000.
 fastify.listen(3000, (err, address) => {
-  if (err) throw err;
-
-  fastify.log.info(`server listening on ${address}`);
+    if (err) throw err;
+    console.log(`Listening on port 3000`);
 });
 ```
 
 Notice how we pass fastify's server instance to GameGuard so that GameGuard can use it to communicate with the client.
 
-The [http-server-examples docs](docs/http-server-examples.md) describe how you can use easily use GameGuard with different server frameworks such as fastify, express, and koa.
+Let's also take a look how we can accomplish the same thing we did above but with express:
 
-## **Databases**
+```js
+'use strict'
 
-Older versions of gameguard would allow you to use a local file as a database. However, that has since been removed (maybe temporairly) as it was causing issues and now you have the option to use mysql or mongodb.
+const path = require('path');
+const express = require('express');
+const GameGuard = require('gameguard');
 
-The option for the type of database to use is defined as an initialization option as shown above. For specific connection information such as host, port, user, etc. you must create a `.env` file defining the values.
+const app = express();
 
-A good starting point for creating a `.env` file is the `.sample.env` file. This file highlights all of the variables that can be defined in a `.env` file and their default values that are used if none are specified.
+// Have the server listen on port 3000.
+const server = app.listen(3000, () => console.log('Listening on port 3000'));
+
+// Set the GameGuard server to use a latency check interval of 1000ms.
+const gg = new GameGuard(server, { latencyCheckInterval: 1000 });
+```
+
+## **Operation**
+
+Now let's talk about the operation of GameGuard:
+
+1. The GameGuard server instance is created with a http server instance.
+
+2. Now, the GameGuard server waits for a WebSocket connection from a page using the GameGuard client and in specific it waits for the client to send a message that contains the id of the player that connected.
+
+3. Before the client becomes a player, the GameGuard server checks to see if the id of that client corresponds to a player in the database that is banned and if so their connection gets reject. Otherwise, the client is accepted and their player profile is created locally and updated in the database.
+
+4. Everything is set up now. The player can be kicked, banned, messaged, or put into rooms.
+
+## **Guides**
+
+Since GameGuard is not a linear app and it's hard to go in order with what to document, we'll just go over the general aspect of each part of GameGuard and then link to the documentation for that module that goes in detail about it.
+
+### **Database**
+
+The GameGuard server uses the MongoDB to manage players with the mongoose package to manage the schemas and other operations. The database connection info has a default value of `mongodb://localhost:27017/gameguard` but you can configure the connection credentials in a `.env` file with a sample connection file provided as `.env.sample`. 
+
+Check out the [database documentation](docs/database.md) for more specific database operations and how to create your own operations if you want to extend GameGuard.
+
+### **Player**
+
+At it's core, GameGuard works around watching for clients trying to connect to the server and turning those clients into players. Once connected, players can be interacted with in forms of messaging, kicking, banning, or placing in rooms.
+
+Check out the [player documentation](docs/player.md) for more specific player operations and how to create your own operations if you want to extend GameGuard.
+
+### **Room**
+
+Rooms are used to group players together to perform similar actions together. For example, you can group players together in a room and easily send messages to all of them.
+
+Check out the [room documentation](docs/room.md) for more specific room operations and how to create if your own operations if you want to extend GameGuard.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 ## **Players**
 
