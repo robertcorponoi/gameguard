@@ -1,8 +1,8 @@
-# System
+# **Global**
 
-The system module contains methods that affect all players and rooms.
+There are a few actions in GameGuard that are global and affect all players connected to the GameGuard server regardless of the rooms they are in.
 
-Table of Contents
+## **Table of Contents**
 
 - [API](#api)
 
@@ -10,13 +10,9 @@ Table of Contents
 
 ### **broadcast**
 
-Sends a message to all players in the server regardless of what room they are or are not in.
+Sends a message to all players connected to the GameGuard server.
 
 | param   	| type   	| description                                                                  	| default 	|
 |---------	|--------	|------------------------------------------------------------------------------	|---------	|
 | type    	| string 	| The type of message this is. This helps you decipher messages on the client. 	|         	|
-| contents 	| string 	| The conents of the message to send to everyone.                                           	|         	|
-
-```js
-gameGuard.system.broadcast('info', 'Hello World!');
-```
+| contents 	| string 	| The contents of the message to send to all of the players.                    |         	|

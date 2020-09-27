@@ -101,7 +101,7 @@ export default class Room {
     }
 
     /**
-     * Removes a player from room room.
+     * Removes a player from the room.
      * 
      * @param {Player} player The player to remove from the room.
      */

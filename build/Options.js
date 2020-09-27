@@ -34,6 +34,14 @@ class Options {
          * @default 300
          */
         this.maxLatency = 300;
+        /**
+         * The mongodb connection string.
+         *
+         * @property {string}
+         *
+         * @default mongodb://localhost:27017
+         */
+        this.mongodbConnectionString = 'mongodb://localhost:27017';
         Object.assign(this, options);
     }
 }

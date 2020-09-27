@@ -1,7 +1,5 @@
 'use strict'
 
-require('dotenv').config();
-
 import ws from 'ws';
 import http from 'http';
 import https from 'https';
@@ -122,7 +120,7 @@ module.exports = class GameGuard {
 
         // Set up the database connection and then wait for the connection to be open
         // before we proceed.
-        this.db = new Database();
+        this.db = new Database(this._options);
         this.db.connected.add(() => this._boot());
     }
 

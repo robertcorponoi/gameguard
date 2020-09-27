@@ -11,7 +11,7 @@ export default class Options {
      * 
      * @default 30000
      */
-    heartbeatInterval: number = 30000;
+    heartbeatInterval = 30000;
 
     /**
      * The interval at which each player's latency is calculated, in milliseconds.
@@ -22,7 +22,7 @@ export default class Options {
      * 
      * @default 5000
      */
-    latencyCheckInterval: number = 5000;
+    latencyCheckInterval = 5000;
 
     /**
      * The max latency, in milliseconds, a player can have before being kicked.
@@ -31,7 +31,16 @@ export default class Options {
      *
      * @default 300
      */
-    maxLatency: number = 300;
+    maxLatency = 300;
+
+    /**
+     * The mongodb connection string.
+     * 
+     * @property {string}
+     * 
+     * @default mongodb://localhost:27017
+     */
+    mongodbConnectionString = 'mongodb://localhost:27017';
 
     /**
      * @param {Object} options The options passed to GameGuard on initialization.

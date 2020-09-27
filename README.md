@@ -20,13 +20,19 @@ GameGuard is a NodeJS game server that can be used to manage the players connect
 
 **Note:** This is the post 1.0.0 version of GameGuard that has lots of breaking changes from the last version due to major simplification. All of the previous features still exist but the API has changed to be more simple and streamlined. GameGuard can now be used on it's own but it has been simplified in order to be able to be extended further to suit your needs.
 
+**Note About Logging:** For now, GameGuard has no logging capability. I've gone back and forth about implementing logging but I've found it to be so customizable it would be much easier for the end user to implement using signals but if there's enough requests then logging can be implemented to be a core part of GameGuard.
+
 **Table of Contents**
 
 - [Install](#install)
 - [Initialization](#initialization)
 - [Operation](#operation)
-- [Guides](#guides)
+- [Docs](#docs)
   - [Database](#database)
+  - [Players](#players)
+  - [Rooms](#rooms)
+  - [Global](#global)
+- [Tests](#tests)
 
 ## **Install**
 
@@ -50,13 +56,14 @@ $ npm install gameguard-client
 
 To initialize GameGuard, you have to initialize it with a reference to a http or https server and an optional set of options.
 
-| param                        | type        | description                                                                    | default   |
-|------------------------------|-------------|--------------------------------------------------------------------------------|-----------|
-| server                       | http.Server | A reference to the http server instance to bind to.                            |           |
-| options                      | Object      |                                                                                |           |
-| options.heartbeatInterval    | number      | The interval at which each player is pinged, in milliseconds.                  | 30000     |
-| options.latencyCheckInterval | number      | The interval at which each player's latency is calculated, in milliseconds.    | 5000      |
-| options.maxLatency           | number      | The maximum latency, in milliseconds, the player can have before being kicked. | 300       |
+| param                           | type        | description                                                                    | default                   |
+|---------------------------------|-------------|--------------------------------------------------------------------------------|---------------------------|
+| server                          | http.Server | A reference to the http server instance to bind to.                            |                           |
+| options                         | Object      |                                                                                |                           |
+| options.heartbeatInterval       | number      | The interval at which each player is pinged, in milliseconds.                  | 30000                     |
+| options.latencyCheckInterval    | number      | The interval at which each player's latency is calculated, in milliseconds.    | 5000                      |
+| options.maxLatency              | number      | The maximum latency, in milliseconds, the player can have before being kicked. | 300                       |
+| options.mongodbConnectionString | string      | The connection string to use to connect to mongodb.                            | mongodb://localhost:27017 |
 
 **Example:**
 
@@ -130,7 +137,7 @@ Now let's talk about the operation of GameGuard:
 
 4. Everything is set up now. The player can be kicked, banned, messaged, or put into rooms.
 
-## **Guides**
+## **Docs**
 
 Since GameGuard is not a linear app and it's hard to go in order with what to document, we'll just go over the general aspect of each part of GameGuard and then link to the documentation for that module that goes in detail about it.
 
@@ -138,60 +145,29 @@ Since GameGuard is not a linear app and it's hard to go in order with what to do
 
 The GameGuard server uses the MongoDB to manage players with the mongoose package to manage the schemas and other operations. The database connection info has a default value of `mongodb://localhost:27017/gameguard` but you can configure the connection credentials in a `.env` file with a sample connection file provided as `.env.sample`. 
 
-Check out the [database documentation](docs/database.md) for more specific database operations and how to create your own operations if you want to extend GameGuard.
+Check out the [database documentation](docs/database.md) for more specific database operations.
 
-### **Player**
+### **Players**
 
 At it's core, GameGuard works around watching for clients trying to connect to the server and turning those clients into players. Once connected, players can be interacted with in forms of messaging, kicking, banning, or placing in rooms.
 
-Check out the [player documentation](docs/player.md) for more specific player operations and how to create your own operations if you want to extend GameGuard.
+Check out the [player documentation](docs/player.md) for more specific player operations.
 
-### **Room**
+### **Rooms**
 
 Rooms are used to group players together to perform similar actions together. For example, you can group players together in a room and easily send messages to all of them.
 
-Check out the [room documentation](docs/room.md) for more specific room operations and how to create if your own operations if you want to extend GameGuard.
+Check out the [room documentation](docs/room.md) for more specific room operations.
 
+## **Global**
 
+There are a few actions in GameGuard that are global and affect all players connected to the GameGuard server regardless of the rooms they are in.
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-## **Players**
-
-At it's core, GameGuard works around taking clients and turning them into players.
-
-To see all of the properties, signals, and methods available to use with players, check out the [player documentation](docs/players.md).
-
-Once a player has connected or through outher signals that return a player object, you can interact with that player and perform actions such as kicking/banning. Check out the [individual player documentation](docs/player.md).
-
-## **Rooms**
-
-Rooms can be used to group players together so that you can more easily manage them and broadcast messages to all players in a room.
-
-To see the properties, signals, and methods available to use with the Rooms modules such as creating or destroying rooms, check out the [rooms documentation](docs/rooms.md).
-
-Once you create a room, you can use all of the properties and methods available for individual rooms on that create room. To see all of the properties, signals, and methods available to use on any room created through the Rooms module, check out the [room documentation](docs/room.md).
-
-## **System**
-
-System is used to perform actions that affect every player in the server, regardless of the room they are in.
-
-To see all of the properties, signals, and methods available to use with the system, check out the [system documentation](docs/system.md).
+Check out the [global documentation](docs/global.md) for more specific global operations.
 
 ## **Tests**
 
-To run the tests for GameGuard, you can use:
+To run the tests for GameGuard server, you can use:
 
 ```bash
 $ npm run test

@@ -71,7 +71,7 @@ export default class Room {
      */
     addPlayer(player: Player): void;
     /**
-     * Removes a player from room room.
+     * Removes a player from the room.
      *
      * @param {Player} player The player to remove from the room.
      */

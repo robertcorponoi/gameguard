@@ -3,11 +3,19 @@
 import mongoose from 'mongoose';
 import Hypergiant from 'hypergiant';
 import PlayerSchema from './schemas/Player';
+import Options from '../Options';
 
 /**
  * Handles database operations in mongodb or mysql.
  */
 export default class Database {
+    /**
+     * The options passed to GameGuard on initialization.
+     * 
+     * @property {Options}
+     */
+    private _options: Options;
+
     /**
      * A reference to the mongodb connection.
      * 
@@ -20,7 +28,7 @@ export default class Database {
      * 
      * @property {mongoose.Model}
      */
-    player: any = mongoose.model('Player', PlayerSchema);
+    player = mongoose.model('Player', PlayerSchema);
 
     /**
      * The signal that is dispatched when the mongodb is successfully connected
@@ -28,13 +36,16 @@ export default class Database {
      * 
      * @property {Hypergiant}
      */
-    connected: Hypergiant = new Hypergiant();
+    connected = new Hypergiant();
 
     /**
      * When the Database module is initialized we set up the connection to the
      * database and dispatch the `connected` signal.
+     * 
+     * @param {Options} options The options passed to GameGuard on initialization.
      */
-    constructor() {
+    constructor(options: Options) {
+        this._options = options;
         this.db = mongoose.connection;
         this._connect();
     }
@@ -55,7 +66,7 @@ export default class Database {
 
         // Get the connection info from the .env file and use it to establish a
         // connection to mongodb.
-        mongoose.connect(`mongodb://localhost/${process.env.MONGODB_NAME}`, {
+        mongoose.connect(this._options.mongodbConnectionString, {
             useNewUrlParser: true,
             useUnifiedTopology: true,
             useFindAndModify: false,

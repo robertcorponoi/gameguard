@@ -3,7 +3,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-require('dotenv').config();
 const ws_1 = __importDefault(require("ws"));
 const hypergiant_1 = __importDefault(require("hypergiant"));
 const Room_1 = __importDefault(require("./Room"));
@@ -76,7 +75,7 @@ module.exports = class GameGuard {
         this._options = new Options_1.default(options);
         // Set up the database connection and then wait for the connection to be open
         // before we proceed.
-        this.db = new Database_1.default();
+        this.db = new Database_1.default(this._options);
         this.db.connected.add(() => this._boot());
     }
     /**

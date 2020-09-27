@@ -1,14 +1,16 @@
 {
   "name": "gameguard",
-  "version": "0.14.1",
-  "description": "A JavaScript game server for managing your game's players and state",
+  "version": "1.0.0",
+  "description": "GameGuard is a NodeJS game server that can be used to manage the players connecting to your game, manage rooms and the players in them, and more.",
   "main": "build/index.js",
   "scripts": {
-    "tsc": "tsc",
-    "tsc:watch": "tsc --watch",
+    "rm:build": "rm -rf build",
+    "tsc": "npm run rm:build && tsc",
+    "tsc:watch": "npm run rm:build && tsc --watch",
     "test": "mocha tests/unit/gameguard.test.js",
     "test:express": "node tests/framework-tests/express/express.test.js",
-    "test:fastify": "node tests/framework-tests/fastify/fastify.test.js"
+    "test:fastify": "node tests/framework-tests/fastify/fastify.test.js",
+    "prepublish": "npm run tsc"
   },
   "repository": {
     "type": "git",
@@ -27,28 +29,20 @@
   "license": "MIT",
   "devDependencies": {
     "@types/mongoose": "^5.7.36",
-    "@types/mysql": "^2.15.15",
-    "@types/nedb": "^1.8.10",
-    "@types/request-promise-native": "^1.0.17",
     "@types/ws": "^7.2.6",
     "chai": "^4.2.0",
     "express": "^4.17.1",
     "fastify": "^3.3.0",
     "fastify-static": "^3.2.0",
-    "fs-extra": "^9.0.1",
     "gameguard-client": "^0.14.1",
-    "koa": "^2.13.0",
-    "koa-static": "^5.0.0",
     "mocha": "^8.1.3",
     "rollup": "^2.26.10",
     "sinon": "^9.0.3",
     "typescript": "^4.0.2"
   },
   "dependencies": {
-    "dotenv": "^8.2.0",
     "hypergiant": "^3.1.0",
     "mongoose": "^5.10.3",
-    "mysql2": "^2.1.0",
     "ws": "^7.3.1"
   }
 }

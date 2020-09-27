@@ -22,8 +22,10 @@ class Database {
     /**
      * When the Database module is initialized we set up the connection to the
      * database and dispatch the `connected` signal.
+     *
+     * @param {Options} options The options passed to GameGuard on initialization.
      */
-    constructor() {
+    constructor(options) {
         /**
          * A reference to the Player model created from the Player schema.
          *
@@ -37,6 +39,7 @@ class Database {
          * @property {Hypergiant}
          */
         this.connected = new hypergiant_1.default();
+        this._options = options;
         this.db = mongoose_1.default.connection;
         this._connect();
     }
@@ -54,7 +57,7 @@ class Database {
         this.db.once('open', () => this.connected.dispatch());
         // Get the connection info from the .env file and use it to establish a
         // connection to mongodb.
-        mongoose_1.default.connect(`mongodb://localhost/${process.env.MONGODB_NAME}`, {
+        mongoose_1.default.connect(this._options.mongodbConnectionString, {
             useNewUrlParser: true,
             useUnifiedTopology: true,
             useFindAndModify: false,

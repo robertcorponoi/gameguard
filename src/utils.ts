@@ -10,11 +10,11 @@ import Message from './Message';
  * @returns {Message} Returns a new message object from the arraybuffer.
  */
 export function bufferToMessage(buffer: ArrayBuffer): Message {
-    const decoder: TextDecoder = new TextDecoder('utf8');
-    const decoded: string = decoder.decode(buffer);
+    const decoder = new TextDecoder('utf8');
+    const decoded = decoder.decode(buffer);
     if (!decoded) return new Message('', '');
 
-    const parsed: any = JSON.parse(decoded);
+    const parsed = JSON.parse(decoded);
     const message = new Message(parsed.type, parsed.contents);
 
     return message;

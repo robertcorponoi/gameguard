@@ -1,9 +1,16 @@
 import mongoose from 'mongoose';
 import Hypergiant from 'hypergiant';
+import Options from '../Options';
 /**
  * Handles database operations in mongodb or mysql.
  */
 export default class Database {
+    /**
+     * The options passed to GameGuard on initialization.
+     *
+     * @property {Options}
+     */
+    private _options;
     /**
      * A reference to the mongodb connection.
      *
@@ -15,7 +22,7 @@ export default class Database {
      *
      * @property {mongoose.Model}
      */
-    player: any;
+    player: mongoose.Model<mongoose.Document, {}>;
     /**
      * The signal that is dispatched when the mongodb is successfully connected
      * to and ready to be used.
@@ -26,8 +33,10 @@ export default class Database {
     /**
      * When the Database module is initialized we set up the connection to the
      * database and dispatch the `connected` signal.
+     *
+     * @param {Options} options The options passed to GameGuard on initialization.
      */
-    constructor();
+    constructor(options: Options);
     /**
      * Establishes the connection to the database.
      *

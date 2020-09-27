@@ -29,6 +29,14 @@ export default class Options {
      */
     maxLatency: number;
     /**
+     * The mongodb connection string.
+     *
+     * @property {string}
+     *
+     * @default mongodb://localhost:27017
+     */
+    mongodbConnectionString: string;
+    /**
      * @param {Object} options The options passed to GameGuard on initialization.
      */
     constructor(options: any);

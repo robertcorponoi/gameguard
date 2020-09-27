@@ -1,5 +1,9 @@
-## 1.0.0 / 2020-09-12
-- [FEATURE] 
+## 1.0.0 / 2020-09-26
+- [FEATURE] Moved the player signals and methods out of `gameguard.players` and into `gameguard`.
+- [FEATURE] Moved the room signals and methods out of `gmaeguard.rooms` and into `gameguard`.
+- [FEATURE] Moved the system methods out of `gameguard.system` and into `gameguard`.
+- [FEATURE] Removed support for mysql and streamlined the database operations.
+- [FEATURE] Added convenience methods to add and update properties of players in the database.
 - [TEST] Updated tests and removed unnecessary tests.
 - [TEST] Updated framework tests and add npm scripts to run them.
 - [DOCS] Updated documentation to reflect latest changes.
